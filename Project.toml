@@ -1,5 +1,5 @@
-name = "KrylovPrecondioners"
-uuid = "726d5ff1-3cf7-408d-809c-aa0ad0af2ebe"
+name = "KrylovPreconditioners"
+uuid = "45d422c2-293f-44ce-8315-2cb988662dec"
 authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>"]
 version = "0.1.0"
 
