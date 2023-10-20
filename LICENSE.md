@@ -1,4 +1,4 @@
-Copyright (c) 2023: Alexis Montoison
+Copyright (c) 2023-present: Alexis Montoison
 
 Preconditioning.jl is licensed under the [MPL version 2.0](https://www.mozilla.org/MPL/2.0/).
 
