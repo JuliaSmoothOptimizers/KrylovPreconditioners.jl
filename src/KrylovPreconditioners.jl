@@ -1,6 +1,6 @@
 module KrylovPreconditioners
 
-using LinearAlgebra
+using LinearAlgebra, SparseArrays
 using AMDGPU, CUDA
 
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
