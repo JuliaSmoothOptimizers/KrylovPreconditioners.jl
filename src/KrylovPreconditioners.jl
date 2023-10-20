@@ -1,7 +1,8 @@
 module KrylovPreconditioners
 
 using LinearAlgebra, SparseArrays
-using AMDGPU, CUDA
+using AMDGPU, AMDGPU.rocSPARSE
+using CUDA, CUDA.CUSPARSE
 
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 
