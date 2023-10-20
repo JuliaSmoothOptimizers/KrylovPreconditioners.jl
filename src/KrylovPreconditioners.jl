@@ -3,12 +3,12 @@ module KrylovPreconditioners
 greet() = print("Hello World!")
 
 # Preconditioners
-include(preconditioners.jl)
+# include(preconditioners.jl)
 
 # Scaling
-include(scaling.jl)
+# include(scaling.jl)
 
 # Ordering
-include(metis.jl)
+# include(metis.jl)
 
 end # module KrylovPreconditioners
