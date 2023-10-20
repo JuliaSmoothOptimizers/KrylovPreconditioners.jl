@@ -4,12 +4,9 @@ authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>"]
 version = "0.1.0"
 
 [deps]
-AMD = "14f7f29c-3bd6-536c-9a0b-7339e30b5a3e"
+AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-Metis = "2679e427-3c69-5b7f-982b-ece356f1e94b"
-Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
-SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-SymRCM = "286e6d88-80af-4590-acc9-0001b223b9bd"
 
 [compat]
 julia = "1.6"
