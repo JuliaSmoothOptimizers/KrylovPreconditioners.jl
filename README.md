@@ -19,4 +19,4 @@
 [downloads-img]: https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/KrylovPreconditioners
 [downloads-url]: https://pkgs.genieframework.com?packages=KrylovPreconditioners
 
-The best sidekick of [KrylovPreconditioners.jl](https://github.com/JuliaSmoothOptimizers/Krylov.jl) └(^o^ )Ｘ( ^o^)┘
+The best sidekick of [Krylov.jl](https://github.com/JuliaSmoothOptimizers/Krylov.jl) └(^o^ )Ｘ( ^o^)┘
