@@ -1,3 +1,5 @@
+export ilu0
+
 mutable struct NVIDIA_ILU0{SM,DM}
   P::SM
   z::DM
@@ -17,13 +19,13 @@ end
 
 for ArrayType in (:(CuVector{T}), :(CuMatrix{T}))
   @eval begin
-    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{<:$ArrayType,CuSparseMatrixCSR{T,Cint}}, x::$ArrayType) where T <: BlasFloat
+    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{CuSparseMatrixCSR{T,Cint},<:$ArrayType}, x::$ArrayType) where T <: BlasFloat
       ldiv!(ilu.z, UnitLowerTriangular(ilu.P), x)  # Forward substitution with L
       ldiv!(y, UpperTriangular(ilu.P), ilu.z)      # Backward substitution with U
       return y
     end
 
-    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{<:$ArrayType,CuSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
+    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{CuSparseMatrixCSC{T,Cint},<:$ArrayType}, x::$ArrayType) where T <: BlasReal
       ldiv!(ilu.z, LowerTriangular(ilu.P), x)      # Forward substitution with L
       ldiv!(y, UnitUpperTriangular(ilu.P), ilu.z)  # Backward substitution with U
       return y

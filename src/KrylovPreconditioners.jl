@@ -5,6 +5,7 @@ using AMDGPU, AMDGPU.rocSPARSE
 using CUDA, CUDA.CUSPARSE
 
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
+import LinearAlgebra: ldiv!
 
 # Preconditioners
 include("ic0.jl")
