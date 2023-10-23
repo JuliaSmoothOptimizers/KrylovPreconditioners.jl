@@ -13,8 +13,6 @@ steps:
         Pkg.add("Krylov")
         Pkg.instantiate()
         using CUDA
-
-      julia --color=yes --project -e '
         include("test/gpu/nvidia.jl")'
     timeout_in_minutes: 30
 
