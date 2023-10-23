@@ -10,11 +10,9 @@ steps:
       julia --color=yes --project -e '
         using Pkg
         Pkg.add("CUDA")
-        Pkg.add("LinearOperators")
+        Pkg.add("Krylov")
         Pkg.instantiate()
         using CUDA
-
-      julia --color=yes --project -e '
         include("test/gpu/nvidia.jl")'
     timeout_in_minutes: 30
 
@@ -36,6 +34,7 @@ steps:
         using Pkg
         # Pkg.add("AMDGPU")
         Pkg.add(url="https://github.com/JuliaGPU/AMDGPU.jl", rev="master")
+        Pkg.add("Krylov")
         Pkg.instantiate()
         include("test/gpu/amd.jl")'
     timeout_in_minutes: 30
@@ -51,6 +50,7 @@ steps:
       julia --color=yes --project -e '
         using Pkg
         Pkg.add("oneAPI")
+        Pkg.add("Krylov")
         Pkg.instantiate()
         include("test/gpu/intel.jl")'
     timeout_in_minutes: 30
