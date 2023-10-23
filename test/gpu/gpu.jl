@@ -15,7 +15,7 @@ function test_ic0(FC, V, M)
   b_gpu = V(b_cpu)
   P = ic0(A_gpu)
 
-  x_gpu, stats = cg(A_gpu, b_gpu, M=P, atol=atol, rtol=rtol, verbose=verbose, ldiv=true)
+  x_gpu, stats = cg(A_gpu, b_gpu, M=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
   @test norm(r_gpu) ≤ 1e-8
