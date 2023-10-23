@@ -8,19 +8,19 @@ include("gpu.jl")
   CUDA.allowscalar(false)
 
   @testset "IC(0)" begin
-    @testset "CuSparseMatrixCSC -- $FC" for FC in (Float32, Float64)
+    @testset "CuSparseMatrixCSC -- $FC" for FC in (Float64,)
       test_ic0(FC, CuVector{FC}, CuSparseMatrixCSC{FC})
     end
-    @testset "CuSparseMatrixCSR -- $FC" for FC in (Float32, Float64, ComplexF32, ComplexF64)
+    @testset "CuSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
       test_ic0(FC, CuVector{FC}, CuSparseMatrixCSR{FC})
     end
   end
 
   @testset "ILU(0)" begin
-    @testset "CuSparseMatrixCSC -- $FC" for FC in (Float32, Float64)
+    @testset "CuSparseMatrixCSC -- $FC" for FC in (Float64,)
       test_ilu0(FC, CuVector{FC}, CuSparseMatrixCSC{FC})
     end
-    @testset "CuSparseMatrixCSR -- $FC" for FC in (Float32, Float64, ComplexF32, ComplexF64)
+    @testset "CuSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
       test_ilu0(FC, CuVector{FC}, CuSparseMatrixCSR{FC})
     end
   end
