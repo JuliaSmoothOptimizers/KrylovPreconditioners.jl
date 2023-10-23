@@ -1,5 +1,5 @@
 using SparseArrays, Random, Test
-using LinearAlgebra, Krylov, KrylovPrecondioners
+using LinearAlgebra, Krylov, KrylovPreconditioners
 
 Random.seed!(666)
 
