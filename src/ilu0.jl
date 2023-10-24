@@ -1,4 +1,4 @@
-export ilu0
+export kp_ilu0
 
 mutable struct NVIDIA_ILU0{SM,DM}
   P::SM
@@ -8,7 +8,7 @@ end
 for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
                                      (:(CuSparseMatrixCSC{T,Cint}), :BlasReal))
   @eval begin
-    function ilu0(A::$SparseMatrixType; nrhs::Int=1) where T <: $BlasType
+    function kp_ilu0(A::$SparseMatrixType; nrhs::Int=1) where T <: $BlasType
       P = CUSPARSE.ilu02(A)
       n = checksquare(A)
       z = nrhs == 1 ? CuVector{T}(undef, n) : CuMatrix{T}(undef, n, nrhs)
@@ -40,7 +40,7 @@ end
 for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T,Cint}), :BlasFloat),
                                      (:(ROCSparseMatrixCSC{T,Cint}), :BlasReal))
   @eval begin
-    function ilu0(A::$SparseMatrixType) where T <: $BlasType
+    function kp_ilu0(A::$SparseMatrixType) where T <: $BlasType
       P = rocSPARSE.ilu0(A, 'O')
       return AMD_ILU0(P)
     end
