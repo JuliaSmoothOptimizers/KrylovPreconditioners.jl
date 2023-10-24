@@ -9,7 +9,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
                                      (:(CuSparseMatrixCSC{T,Cint}), :BlasReal))
   @eval begin
     function ic0(A::$SparseMatrixType; nrhs::Int=1) where T <: $BlasType
-      P = ic02(A)
+      P = CUSPARSE.ic02(A)
       n = checksquare(A)
       z = nrhs == 1 ? CuVector{T}(undef, n) : CuMatrix{T}(undef, n, nrhs)
       return NVIDIA_IC0(P,z)
@@ -41,7 +41,7 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T,Cint}), :BlasFloat)
                                      (:(ROCSparseMatrixCSC{T,Cint}), :BlasReal))
   @eval begin
     function ic0(A::$SparseMatrixType) where T <: $BlasType
-      P = ilu0(A, 'O')
+      P = rocSPARSE.ic0(A, 'O')
       return AMD_IC0(P)
     end
   end
