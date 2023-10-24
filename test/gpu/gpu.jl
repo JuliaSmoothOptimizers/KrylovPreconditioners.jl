@@ -13,7 +13,7 @@ function test_ic0(FC, V, M)
   
   A_gpu = M(A_cpu)
   b_gpu = V(b_cpu)
-  P = ic0(A_gpu)
+  P = kp_ic0(A_gpu)
 
   x_gpu, stats = cg(A_gpu, b_gpu, M=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
@@ -30,7 +30,7 @@ function test_ilu0(FC, V, M)
   
   A_gpu = M(A_cpu)
   b_gpu = V(b_cpu)
-  P = ilu0(A_gpu)
+  P = kp_ilu0(A_gpu)
 
   x_gpu, stats = gmres(A_gpu, b_gpu, N=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
