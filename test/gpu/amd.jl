@@ -27,9 +27,8 @@ include("gpu.jl")
   end
 
   @testset "Block Jacobi preconditioner" begin
-      test_preconditioner(CPU(), Array, SparseMatrixCSC)
-      if CUDA.has_cuda()
-          test_preconditioner(CUDABackend(), CuArray, CuSparseMatrixCSR)
+      if AMDGPU.functional()
+          test_preconditioner(ROCBackend(), ROCArray, ROCSparseMatrixCSR)
       end
   end
 
