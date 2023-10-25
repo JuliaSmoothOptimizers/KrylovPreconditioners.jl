@@ -30,7 +30,7 @@ include("gpu.jl")
   @testset "Block Jacobi preconditioner" begin
       test_preconditioner(CPU(), Array, SparseMatrixCSC)
       if CUDA.has_cuda()
-          test_preconditioner(CUDABackend(), CuArray, CuSparseMatrixCSR)
+          test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSR)
       end
   end
 
