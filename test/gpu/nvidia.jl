@@ -1,5 +1,7 @@
 using CUDA, CUDA.CUSPARSE, CUDA.CUSOLVER
+using KernelAbstractions
 
+_get_type(J::CuSparseMatrixCSR) = CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
 include("gpu.jl")
 
 @testset "Nvidia -- CUDA.jl" begin
@@ -23,6 +25,12 @@ include("gpu.jl")
     @testset "CuSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
       test_ilu0(FC, CuVector{FC}, CuSparseMatrixCSR{FC})
     end
+  end
+
+  @testset "Block Jacobi preconditioner" begin
+      if CUDA.functional()
+          test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSR)
+      end
   end
 
 end

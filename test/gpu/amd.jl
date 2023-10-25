@@ -1,5 +1,6 @@
 using AMDGPU, AMDGPU.rocSPARSE, AMDGPU.rocSOLVER
 
+_get_type(J::ROCSparseMatrixCSR) = ROCArray{Float64, 1, AMDGPU.Mem.HIPBuffer}
 include("gpu.jl")
 
 @testset "AMD -- AMDGPU.jl" begin
@@ -23,6 +24,12 @@ include("gpu.jl")
     @testset "ROCSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
       test_ilu0(FC, ROCVector{FC}, ROCSparseMatrixCSR{FC})
     end
+  end
+
+  @testset "Block Jacobi preconditioner" begin
+      if AMDGPU.functional()
+          test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSR)
+      end
   end
 
 end

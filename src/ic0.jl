@@ -1,6 +1,6 @@
 export kp_ic0
 
-mutable struct NVIDIA_IC0{SM,DM}
+mutable struct NVIDIA_IC0{SM,DM} <: AbstractKrylovPreconditioner
   P::SM
   z::DM
 end
