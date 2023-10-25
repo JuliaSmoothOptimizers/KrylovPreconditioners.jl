@@ -2,7 +2,7 @@ using AMDGPU
 using CUDA
 using KernelAbstractions
 
-if CUDA.has_cuda_gpu()
+if CUDA.functional()
     include("gpu/nvidia.jl")
 end
 if AMDGPU.has_rocm_gpu()
