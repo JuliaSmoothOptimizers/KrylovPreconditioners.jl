@@ -38,7 +38,7 @@ function test_preconditioner(device, AT, SMT)
     CUDA.allowscalar() do
         Krylov.bicgstab!(
             linear_solver, A, b;
-            # N=precond,
+            N=precond,
             atol=1e-10,
             rtol=1e-10,
             verbose=0,

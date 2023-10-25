@@ -166,7 +166,7 @@ Base.eltype(::BlockJacobiKrylovPreconditioner) = Float64
     end
 end
 
-function mul!(y, C::BlockJacobiKrylovPreconditioner, b::Vector{T}) where T
+function LinearAlgebra.mul!(y, C::BlockJacobiKrylovPreconditioner, b::Vector{T}) where T
     n = size(b, 1)
     fill!(y, zero(T))
     for i=1:C.nblocks
@@ -180,7 +180,7 @@ function mul!(y, C::BlockJacobiKrylovPreconditioner, b::Vector{T}) where T
     end
 end
 
-function mul!(Y, C::BlockJacobiKrylovPreconditioner, B::Matrix{T}) where T
+function LinearAlgebra.mul!(Y, C::BlockJacobiKrylovPreconditioner, B::Matrix{T}) where T
     n, p = size(B)
     fill!(Y, zero(T))
     for i=1:C.nblocks
@@ -196,7 +196,7 @@ function mul!(Y, C::BlockJacobiKrylovPreconditioner, B::Matrix{T}) where T
     end
 end
 
-function mul!(y, C::BlockJacobiKrylovPreconditioner, b::AbstractVector{T}) where T
+function LinearAlgebra.mul!(y, C::BlockJacobiKrylovPreconditioner, b::AbstractVector{T}) where T
     device = KA.get_backend(b)
     n = size(b, 1)
     fill!(y, zero(T))
@@ -210,7 +210,7 @@ function mul!(y, C::BlockJacobiKrylovPreconditioner, b::AbstractVector{T}) where
     KA.synchronize(device)
 end
 
-function mul!(Y, C::BlockJacobiKrylovPreconditioner, B::AbstractMatrix{T}) where T
+function LinearAlgebra.mul!(Y, C::BlockJacobiKrylovPreconditioner, B::AbstractMatrix{T}) where T
     device = KA.get_backend(B)
     n, p = size(B)
     fill!(Y, zero(T))
