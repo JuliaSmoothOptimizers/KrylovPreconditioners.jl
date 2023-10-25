@@ -52,7 +52,6 @@ function generate_random_system(n::Int, m::Int)
 end
 
 function test_block_jacobi(device, AT, SMT)
-    println("Testing ($device, $AT, $SMT)")
     n, m = 100, 100
     A, b, x♯  = generate_random_system(n, m)
     # Transfer data to device
