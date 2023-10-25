@@ -51,7 +51,7 @@ function generate_random_system(n::Int, m::Int)
     return spA, b, x♯
 end
 
-function test_preconditioner(device, AT, SMT)
+function test_block_jacobi(device, AT, SMT)
     println("Testing ($device, $AT, $SMT)")
     n, m = 100, 100
     A, b, x♯  = generate_random_system(n, m)
@@ -66,16 +66,14 @@ function test_preconditioner(device, AT, SMT)
 
     S = _get_type(A)
     linear_solver = Krylov.BicgstabSolver(n, m, S)
-    CUDA.allowscalar() do
-        Krylov.bicgstab!(
-            linear_solver, A, b;
-            N=precond,
-            atol=1e-10,
-            rtol=1e-10,
-            verbose=0,
-            history=true,
-        )
-    end
+    Krylov.bicgstab!(
+        linear_solver, A, b;
+        N=precond,
+        atol=1e-10,
+        rtol=1e-10,
+        verbose=0,
+        history=true,
+    )
     n_iters = length(linear_solver.stats.residuals)
     copyto!(x, linear_solver.x)
     r = b - A * x
