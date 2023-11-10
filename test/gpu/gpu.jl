@@ -64,7 +64,7 @@ function test_block_jacobi(device, AT, SMT)
     x♯ = x♯ |> AT
     x = similar(b); r = similar(b)
     nblocks = 2
-    precond = BlockJacobiKrylovPreconditioner(A, nblocks, device)
+    precond = BlockJacobiPreconditioner(A, nblocks, device)
     KrylovPreconditioners.update(precond, A, device)
 
     S = _get_type(A)
