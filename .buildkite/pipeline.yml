@@ -7,9 +7,10 @@ steps:
       queue: "juliagpu"
       cuda: "*"
     command: |
+      julia --color=yes -e 'Pkg.add("CUDA")'
+    command: |
       julia --color=yes --project -e '
         using Pkg
-        Pkg.add("CUDA")
         Pkg.add("Krylov")
         Pkg.instantiate()
         using CUDA
@@ -30,9 +31,10 @@ steps:
       JULIA_AMDGPU_HIP_MUST_LOAD: "1"
       JULIA_AMDGPU_DISABLE_ARTIFACTS: "1"
     command: |
+      julia --color=yes -e 'Pkg.add("AMDGPU")'
+    command: |
       julia --color=yes --project -e '
         using Pkg
-        Pkg.add("AMDGPU")
         Pkg.add("Krylov")
         Pkg.instantiate()
         include("test/gpu/amd.jl")'
