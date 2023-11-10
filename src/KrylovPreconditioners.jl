@@ -4,14 +4,13 @@ using LinearAlgebra, SparseArrays
 
 using Adapt
 using KernelAbstractions
-using AMDGPU, AMDGPU.rocSPARSE
-using CUDA, CUDA.CUSPARSE
 const KA = KernelAbstractions
 
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!
 
 abstract type AbstractKrylovPreconditioner end
+export AbstractKrylovPreconditioner
 
 # Preconditioners
 include("ic0.jl")

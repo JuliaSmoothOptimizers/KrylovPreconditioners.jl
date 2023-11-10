@@ -1,4 +1,4 @@
-export BlockJacobiKrylovPreconditioner, update
+export BlockJacobiPreconditioner, update
 
 using LightGraphs, Metis
 
@@ -42,7 +42,7 @@ Overlapping-Schwarz preconditioner.
 * `part`: Partitioning as output by Metis
 * `cupart`: `part` transferred to the GPU
 """
-struct BlockJacobiKrylovPreconditioner{AT,GAT,VI,GVI,GMT,MI,GMI} <: AbstractKrylovPreconditioner
+struct BlockJacobiPreconditioner{AT,GAT,VI,GVI,GMT,MI,GMI} <: AbstractKrylovPreconditioner
     nblocks::Int64
     blocksize::Int64
     partitions::MI
@@ -60,7 +60,7 @@ struct BlockJacobiKrylovPreconditioner{AT,GAT,VI,GVI,GMT,MI,GMI} <: AbstractKryl
     id::GMT
 end
 
-function BlockJacobiKrylovPreconditioner(J, npart::Int64, device=CPU(), olevel=0) where {}
+function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0) where {}
     if npart < 2
         error("Number of partitions `npart` should be at" *
                 "least 2 for partitioning in Metis")
@@ -117,7 +117,7 @@ function BlockJacobiKrylovPreconditioner(J, npart::Int64, device=CPU(), olevel=0
     cublocks = adapt(device, blocks)
     cumap = adapt(device, map)
     cupart = adapt(device, part)
-    return BlockJacobiKrylovPreconditioner(
+    return BlockJacobiPreconditioner(
         npart, blocksize, bpartitions,
         cubpartitions, lpartitions,
         culpartitions, rest_size,
@@ -128,17 +128,17 @@ function BlockJacobiKrylovPreconditioner(J, npart::Int64, device=CPU(), olevel=0
     )
 end
 
-function BlockJacobiKrylovPreconditioner(J::SparseMatrixCSC; nblocks=-1, device=CPU(), noverlaps=0)
+function BlockJacobiPreconditioner(J::SparseMatrixCSC; nblocks=-1, device=CPU(), noverlaps=0)
     n = size(J, 1)
     npartitions = if nblocks > 0
         nblocks
     else
         div(n, 32)
     end
-    return BlockJacobiKrylovPreconditioner(J, npartitions, device, noverlaps)
+    return BlockJacobiPreconditioner(J, npartitions, device, noverlaps)
 end
 
-Base.eltype(::BlockJacobiKrylovPreconditioner) = Float64
+Base.eltype(::BlockJacobiPreconditioner) = Float64
 
 # NOTE: Custom kernel to implement blocks - vector multiplication.
 # The blocks have very unbalanced sizes, leading to imbalances
@@ -166,7 +166,7 @@ Base.eltype(::BlockJacobiKrylovPreconditioner) = Float64
     end
 end
 
-function LinearAlgebra.mul!(y, C::BlockJacobiKrylovPreconditioner, b::Vector{T}) where T
+function LinearAlgebra.mul!(y, C::BlockJacobiPreconditioner, b::Vector{T}) where T
     n = size(b, 1)
     fill!(y, zero(T))
     for i=1:C.nblocks
@@ -180,7 +180,7 @@ function LinearAlgebra.mul!(y, C::BlockJacobiKrylovPreconditioner, b::Vector{T})
     end
 end
 
-function LinearAlgebra.mul!(Y, C::BlockJacobiKrylovPreconditioner, B::Matrix{T}) where T
+function LinearAlgebra.mul!(Y, C::BlockJacobiPreconditioner, B::Matrix{T}) where T
     n, p = size(B)
     fill!(Y, zero(T))
     for i=1:C.nblocks
@@ -196,7 +196,7 @@ function LinearAlgebra.mul!(Y, C::BlockJacobiKrylovPreconditioner, B::Matrix{T})
     end
 end
 
-function LinearAlgebra.mul!(y, C::BlockJacobiKrylovPreconditioner, b::AbstractVector{T}) where T
+function LinearAlgebra.mul!(y, C::BlockJacobiPreconditioner, b::AbstractVector{T}) where T
     device = KA.get_backend(b)
     n = size(b, 1)
     fill!(y, zero(T))
@@ -210,7 +210,7 @@ function LinearAlgebra.mul!(y, C::BlockJacobiKrylovPreconditioner, b::AbstractVe
     KA.synchronize(device)
 end
 
-function LinearAlgebra.mul!(Y, C::BlockJacobiKrylovPreconditioner, B::AbstractMatrix{T}) where T
+function LinearAlgebra.mul!(Y, C::BlockJacobiPreconditioner, B::AbstractMatrix{T}) where T
     device = KA.get_backend(B)
     n, p = size(B)
     fill!(Y, zero(T))
@@ -308,7 +308,7 @@ function update(p, J::SparseMatrixCSC, device)
     end
 end
 
-function Base.show(precond::BlockJacobiKrylovPreconditioner)
+function Base.show(precond::BlockJacobiPreconditioner)
     npartitions = precond.npart
     nblock = precond.nblocks
     println("#partitions: $npartitions, Blocksize: n = ", nblock,
@@ -317,86 +317,3 @@ function Base.show(precond::BlockJacobiKrylovPreconditioner)
 end
 
 # NVIDIA
-
-BlockJacobiPreconditioner(J::CUSPARSE.CuSparseMatrixCSR; options...) = ExaPF.LS.BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
-
-function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::CUDABackend)
-    nblocks = p.nblocks
-    fillblock_gpu_kernel! = _fillblock_gpu!(device)
-    # Fill Block Jacobi" begin
-    fillblock_gpu_kernel!(
-        p.cublocks, size(p.id,1),
-        p.cupartitions, p.cumap,
-        j_rowptr, j_colval, j_nzval,
-        p.cupart, p.culpartitions, p.id,
-        ndrange=nblocks,
-    )
-    KA.synchronize(device)
-    # Invert blocks begin
-    blocklist = Array{CuArray{Float64,2}}(undef, nblocks)
-    for b in 1:nblocks
-        blocklist[b] = p.cublocks[:,:,b]
-    end
-    CUDA.@sync pivot, info = CUDA.CUBLAS.getrf_batched!(blocklist, true)
-    CUDA.@sync pivot, info, blocklist = CUDA.CUBLAS.getri_batched(blocklist, pivot)
-    for b in 1:nblocks
-        p.cublocks[:,:,b] .= blocklist[b]
-    end
-    return
-end
-
-"""
-    function update(J::CuSparseMatrixCSR, p)
-
-Update the preconditioner `p` from the sparse Jacobian `J` in CSR format for CUDA
-
-1) The dense blocks `cuJs` are filled from the sparse Jacobian `J`
-2) To a batch inversion of the dense blocks using CUBLAS
-3) Extract the preconditioner matrix `p.P` from the dense blocks `cuJs`
-
-"""
-function update(p, J::CUSPARSE.CuSparseMatrixCSR, device::CUDABackend)
-    _update_gpu(p, J.rowPtr, J.colVal, J.nzVal, device)
-end
-
-BlockJacobiPreconditioner(J::rocSPARSE.ROCSparseMatrixCSR; options...) = ExaPF.LS.BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
-
-function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::ROCBackend)
-    nblocks = p.nblocks
-    fillblock_gpu_kernel! = _fillblock_gpu!(device)
-    # Fill Block Jacobi" begin
-    fillblock_gpu_kernel!(
-        p.cublocks, size(p.id,1),
-        p.cupartitions, p.cumap,
-        j_rowptr, j_colval, j_nzval,
-        p.cupart, p.culpartitions, p.id,
-        ndrange=nblocks,
-    )
-    KA.synchronize(device)
-    # Invert blocks begin
-    blocklist = Array{ROCArray{Float64,2}}(undef, nblocks)
-    for b in 1:nblocks
-        blocklist[b] = p.cublocks[:,:,b]
-    end
-    AMDGPU.@sync pivot, info = AMDGPU.rocSOLVER.getrf_batched!(blocklist)
-    AMDGPU.@sync pivot, info, blocklist = AMDGPU.rocSOLVER.getri_batched!(blocklist, pivot)
-    for b in 1:nblocks
-        p.cublocks[:,:,b] .= blocklist[b]
-    end
-    return
-end
-
-"""
-    function update(J::ROCSparseMatrixCSR, p)
-
-Update the preconditioner `p` from the sparse Jacobian `J` in CSR format for ROCm
-
-1) The dense blocks `cuJs` are filled from the sparse Jacobian `J`
-2) To a batch inversion of the dense blocks using CUBLAS
-3) Extract the preconditioner matrix `p.P` from the dense blocks `cuJs`
-
-"""
-function update(p, J::rocSPARSE.ROCSparseMatrixCSR, device::ROCBackend)
-    _update_gpu(p, J.rowPtr, J.colVal, J.nzVal, device)
-end
-
