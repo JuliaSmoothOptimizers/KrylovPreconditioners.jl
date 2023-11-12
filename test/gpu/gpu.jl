@@ -18,7 +18,7 @@ function test_ic0(FC, V, M)
   x_gpu, stats = cg(A_gpu, b_gpu, M=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
-  if (FC <: Complex) && V == ROCVector{FC}
+  if (FC <: Complex) && typeof(V).name.name == :ROCArray
     @test_broken norm(r_gpu) ≤ 1e-6
   else
     @test norm(r_gpu) ≤ 1e-8
@@ -76,11 +76,11 @@ function test_block_jacobi(device, AT, SMT)
         verbose=0,
         history=true,
     )
-    n_iters = length(linear_solver.stats.residuals)
+    n_iters = linear_solver.stats.niter
     copyto!(x, linear_solver.x)
     r = b - A * x
     resid = norm(r) / norm(b)
     @test(resid ≤ 1e-6)
     @test x ≈ x♯
-    @test n_iters <= n
+    @test n_iters ≤ n
 end
