@@ -1,5 +1,4 @@
 using CUDA, CUDA.CUSPARSE, CUDA.CUSOLVER
-using KernelAbstractions
 
 _get_type(J::CuSparseMatrixCSR) = CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
 include("gpu.jl")
