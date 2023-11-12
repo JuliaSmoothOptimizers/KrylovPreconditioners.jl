@@ -7,14 +7,14 @@ steps:
       queue: "juliagpu"
       cuda: "*"
     command: |
-      julia --color=yes -e 'Pkg.add("CUDA")'
-    command: |
+      cd test/gpu
       julia --color=yes --project -e '
         using Pkg
+        Pkg.develop(path="../..")
+        Pkg.add("CUDA")
         Pkg.add("Krylov")
         Pkg.instantiate()
-        using CUDA
-        include("test/gpu/nvidia.jl")'
+        include("nvidia.jl")'
     timeout_in_minutes: 30
 
   - label: "AMD GPUs -- AMDGPU.jl"
@@ -31,13 +31,14 @@ steps:
       JULIA_AMDGPU_HIP_MUST_LOAD: "1"
       JULIA_AMDGPU_DISABLE_ARTIFACTS: "1"
     command: |
-      julia --color=yes -e 'Pkg.add("AMDGPU")'
-    command: |
+      cd test/gpu
       julia --color=yes --project -e '
         using Pkg
+        Pkg.develop(path="../..")
+        Pkg.add("AMDGPU")
         Pkg.add("Krylov")
         Pkg.instantiate()
-        include("test/gpu/amd.jl")'
+        include("amd.jl")'
     timeout_in_minutes: 30
 
   - label: "Intel GPUs -- oneAPI.jl"
@@ -48,10 +49,12 @@ steps:
       queue: "juliagpu"
       intel: "*"
     command: |
+      cd test/gpu
       julia --color=yes --project -e '
         using Pkg
+        Pkg.develop(path="../..")
         Pkg.add("oneAPI")
         Pkg.add("Krylov")
         Pkg.instantiate()
-        include("test/gpu/intel.jl")'
+        include("intel.jl")'
     timeout_in_minutes: 30
