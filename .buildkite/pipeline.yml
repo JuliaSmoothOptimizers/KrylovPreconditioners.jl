@@ -7,8 +7,7 @@ steps:
       queue: "juliagpu"
       cuda: "*"
     command: |
-      cd test/gpu
-      julia --color=yes --project -e '
+      julia --color=yes --project=test/gpu -e '
         using Pkg
         Pkg.develop(path="../..")
         Pkg.add("CUDA")
@@ -31,8 +30,7 @@ steps:
       JULIA_AMDGPU_HIP_MUST_LOAD: "1"
       JULIA_AMDGPU_DISABLE_ARTIFACTS: "1"
     command: |
-      cd test/gpu
-      julia --color=yes --project -e '
+      julia --color=yes --project=test/gpu -e '
         using Pkg
         Pkg.develop(path="../..")
         Pkg.add("AMDGPU")
@@ -49,8 +47,7 @@ steps:
       queue: "juliagpu"
       intel: "*"
     command: |
-      cd test/gpu
-      julia --color=yes --project -e '
+      julia --color=yes --project=test/gpu -e '
         using Pkg
         Pkg.develop(path="../..")
         Pkg.add("oneAPI")
