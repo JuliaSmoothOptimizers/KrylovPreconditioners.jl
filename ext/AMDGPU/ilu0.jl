@@ -5,7 +5,7 @@ end
 for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T,Cint}), :BlasFloat),
                                      (:(ROCSparseMatrixCSC{T,Cint}), :BlasReal))
   @eval begin
-    function kp_ilu0(A::$SparseMatrixType) where T <: $BlasType
+    function KP.kp_ilu0(A::$SparseMatrixType) where T <: $BlasType
       P = rocSPARSE.ilu0(A, 'O')
       return AMD_ILU0(P)
     end
