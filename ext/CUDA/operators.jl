@@ -9,10 +9,10 @@ mutable struct CUDA_KrylovOperator{T}
 end
 
 eltype(A::CUDA_KrylovOperator{T}) where T = T
-size(A::CUDA_KrylovOperator) = (m, n)
+size(A::CUDA_KrylovOperator) = (A.m, A.n)
 
-for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
-                                     (:(CuSparseMatrixCSC{T,Cint}), :BlasFloat))
+for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
+                                     (:(CuSparseMatrixCSC{T}), :BlasFloat))
   @eval begin
     function KP.KrylovOperator(A::$SparseMatrixType; nrhs::Int=1, transa::Char='N') where T <: $BlasType
         m,n = size(A)
