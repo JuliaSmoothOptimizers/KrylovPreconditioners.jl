@@ -42,17 +42,24 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
             return CUDA_KrylovOperator{T}(m, n, rhs, transa, descA, buffer)
         end
     end
+end
 
-    function LinearAlgebra.mul!(y::CuVector{T}, A::CUDA_KrylovOperator{T}, x::CuVector{T}) where T<: BlasFloat
-        descY = CUSPARSE.CuDenseVectorDescriptor(y)
-        descX = CUSPARSE.CuDenseVectorDescriptor(x)
-        CUSPARSE.cusparseSpMV(CUDA.handle(), A.transa, one(T), A.descA, descX, zero(T), descY, T, A.algo, A.buffer)
-    end
+function LinearAlgebra.mul!(y::CuVector{T}, A::CUDA_KrylovOperator{T}, x::CuVector{T}) where T <: BlasFloat
+    (length(y) != A.m) && throw(DimensionMismatch(""))
+    (length(x) != A.n) && throw(DimensionMismatch(""))
+    (A.nrhs != 1) && throw(DimensionMismatch(""))
+    descY = CUSPARSE.CuDenseVectorDescriptor(y)
+    descX = CUSPARSE.CuDenseVectorDescriptor(x)
+    CUSPARSE.cusparseSpMV(CUDA.handle(), A.transa, one(T), A.descA, descX, zero(T), descY, T, A.algo, A.buffer)
+end
 
-    function LinearAlgebra.mul!(Y::CuMatrix{T}, A::CUDA_KrylovOperator{T}, X::CuMatrix{T}) where T<: BlasFloat
-        descY = CUSPARSE.CuDenseVectorDescriptor(y)
-        descX = CUSPARSE.CuDenseVectorDescriptor(x)
-        CUSPARSE.cusparseSpMM(CUDA.handle(), A.transa, 'N', one(T), A.descA, descX, zero(T), descY, T, A.algo, A.buffer)
-    end
-  end
+function LinearAlgebra.mul!(Y::CuMatrix{T}, A::CUDA_KrylovOperator{T}, X::CuMatrix{T}) where T <: BlasFloat
+    mY, nY = size(Y)
+    mX, nX = size(X)
+    (mY != A.m) && throw(DimensionMismatch(""))
+    (mX != A.n) && throw(DimensionMismatch(""))
+    (nY == nX == A.nrhs) || throw(DimensionMismatch(""))
+    descY = CUSPARSE.CuDenseVectorDescriptor(Y)
+    descX = CUSPARSE.CuDenseVectorDescriptor(X)
+    CUSPARSE.cusparseSpMM(CUDA.handle(), A.transa, 'N', one(T), A.descA, descX, zero(T), descY, T, A.algo, A.buffer)
 end
