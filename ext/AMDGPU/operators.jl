@@ -1,4 +1,4 @@
-mutable struct AMD_KrylovOperator{T}
+mutable struct AMD_KrylovOperator{T} <: AbstractKrylovOperator{T}
     type::Type{T}
     m::Int
     n::Int

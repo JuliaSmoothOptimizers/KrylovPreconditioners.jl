@@ -1,4 +1,4 @@
-mutable struct NVIDIA_KrylovOperator{T}
+mutable struct NVIDIA_KrylovOperator{T} <: AbstractKrylovOperator{T}
     type::Type{T}
     m::Int
     n::Int
