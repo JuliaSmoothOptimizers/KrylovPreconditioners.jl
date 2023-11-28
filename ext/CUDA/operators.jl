@@ -26,7 +26,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 buffer_size = Ref{Csize_t}()
                 CUSPARSE.cusparseSpMV_bufferSize(CUDA.handle(), transa, alpha, descA, descX, beta, descY, T, algo, buffer_size)
                 buffer = CuVector{UInt8}(undef, buffer_size)
-                return CUDA_KrylovOperator{T}(m, n, rhs, transa, descA, buffer)
+                return CUDA_KrylovOperator{T}(m, n, nrhs, transa, descA, buffer)
             else
                 alpha = Ref{T}(one(T))
                 beta = Ref{T}(zeto(T))
@@ -39,7 +39,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 CUSPARSE.cusparseSpMM_bufferSize(CUDA.handle(), transa, transb, alpha, descA, descX, beta, descY, T, algo, buffer_size)
                 buffer = CuVector{UInt8}(undef, buffer_size)
                 CUSPARSE.cusparseSpMM_preprocess(CUDA.handle(), transa, transb, alpha, descA, descX, beta, descY, T, algo, buffer)
-                return CUDA_KrylovOperator{T}(m, n, rhs, transa, descA, buffer)
+                return CUDA_KrylovOperator{T}(m, n, nrhs, transa, descA, buffer)
             end
         end
     end
