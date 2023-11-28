@@ -12,6 +12,9 @@ import LinearAlgebra: ldiv!
 abstract type AbstractKrylovPreconditioner end
 export AbstractKrylovPreconditioner
 
+function KrylovOperator end
+export KrylovOperator
+
 # Preconditioners
 include("ic0.jl")
 include("ilu0.jl")
