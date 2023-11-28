@@ -26,6 +26,18 @@ include("gpu.jl")
     end
   end
 
+  @testset "KrylovOperator" begin
+    @testset "CuSparseMatrixCOO -- $FC" for FC in (Float64, ComplexF64)
+      test_operator(FC, CuVector{FC}, CuSparseMatrixCOO{FC})
+    end
+    @testset "CuSparseMatrixCSC -- $FC" for FC in (Float64, ComplexF64)
+      test_operator(FC, CuVector{FC}, CuSparseMatrixCSC{FC})
+    end
+    @testset "CuSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
+      test_operator(FC, CuVector{FC}, CuSparseMatrixCSR{FC})
+    end
+  end
+
   @testset "Block Jacobi preconditioner" begin
       if CUDA.functional()
           test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSR)
