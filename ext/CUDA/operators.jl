@@ -30,7 +30,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 return NVIDIA_KrylovOperator{T}(T, m, n, nrhs, transa, descA, buffer)
             else
                 alpha = Ref{T}(one(T))
-                beta = Ref{T}(zeto(T))
+                beta = Ref{T}(zero(T))
                 descA = CUSPARSE.CuSparseMatrixDescriptor(A, 'O')
                 descX = CUSPARSE.CuDenseMatrixDescriptor(T, n, nrhs)
                 descY = CUSPARSE.CuDenseMatrixDescriptor(T, m, nrhs)
