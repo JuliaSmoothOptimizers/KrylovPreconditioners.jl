@@ -47,9 +47,9 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
 end
 
 function LinearAlgebra.mul!(y::CuVector{T}, A::NVIDIA_KrylovOperator{T}, x::CuVector{T}) where T <: BlasFloat
-    (length(y) != A.m) && throw(DimensionMismatch(""))
-    (length(x) != A.n) && throw(DimensionMismatch(""))
-    (A.nrhs != 1) && throw(DimensionMismatch(""))
+    (length(y) != A.m) && throw(DimensionMismatch("length(y) != A.m"))
+    (length(x) != A.n) && throw(DimensionMismatch("length(x) != A.n"))
+    (A.nrhs == 1) || throw(DimensionMismatch("A.nrhs != 1"))
     descY = CUSPARSE.CuDenseVectorDescriptor(y)
     descX = CUSPARSE.CuDenseVectorDescriptor(x)
     algo = CUSPARSE.CUSPARSE_SPMV_ALG_DEFAULT
@@ -59,9 +59,9 @@ end
 function LinearAlgebra.mul!(Y::CuMatrix{T}, A::NVIDIA_KrylovOperator{T}, X::CuMatrix{T}) where T <: BlasFloat
     mY, nY = size(Y)
     mX, nX = size(X)
-    (mY != A.m) && throw(DimensionMismatch(""))
-    (mX != A.n) && throw(DimensionMismatch(""))
-    (nY == nX == A.nrhs) || throw(DimensionMismatch(""))
+    (mY != A.m) && throw(DimensionMismatch("mY != A.m"))
+    (mX != A.n) && throw(DimensionMismatch("mX != A.n"))
+    (nY == nX == A.nrhs) || throw(DimensionMismatch("nY != A.nrhs or nX != A.nrhs"))
     descY = CUSPARSE.CuDenseMatrixDescriptor(Y)
     descX = CUSPARSE.CuDenseMatrixDescriptor(X)
     algo = CUSPARSE.CUSPARSE_SPMM_ALG_DEFAULT
