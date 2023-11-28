@@ -4,6 +4,7 @@ using CUDA
 using CUDA.CUSPARSE
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!, mul!
+import Base: size, eltype
 
 using KrylovPreconditioners
 const KP = KrylovPreconditioners
