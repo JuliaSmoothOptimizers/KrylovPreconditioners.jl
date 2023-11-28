@@ -39,7 +39,9 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 transb = 'N'
                 CUSPARSE.cusparseSpMM_bufferSize(CUSPARSE.handle(), transa, transb, alpha, descA, descX, beta, descY, T, algo, buffer_size)
                 buffer = CuVector{UInt8}(undef, buffer_size[])
-                CUSPARSE.cusparseSpMM_preprocess(CUSPARSE.handle(), transa, transb, alpha, descA, descX, beta, descY, T, algo, buffer)
+                if !(A isa CuSparseMatrixCOO)
+                    CUSPARSE.cusparseSpMM_preprocess(CUSPARSE.handle(), transa, transb, alpha, descA, descX, beta, descY, T, algo, buffer)
+                end
                 return NVIDIA_KrylovOperator{T}(T, m, n, nrhs, transa, descA, buffer)
             end
         end
