@@ -28,13 +28,13 @@ include("gpu.jl")
 
   @testset "KrylovOperator" begin
     @testset "CuSparseMatrixCOO -- $FC" for FC in (Float64, ComplexF64)
-      test_operator(FC, CuVector{FC}, CuSparseMatrixCOO{FC})
+      test_operator(FC, CuVector{FC}, CuMatrix{FC}, CuSparseMatrixCOO{FC})
     end
     @testset "CuSparseMatrixCSC -- $FC" for FC in (Float64, ComplexF64)
-      test_operator(FC, CuVector{FC}, CuSparseMatrixCSC{FC})
+      test_operator(FC, CuVector{FC}, CuMatrix{FC}, CuSparseMatrixCSC{FC})
     end
     @testset "CuSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
-      test_operator(FC, CuVector{FC}, CuSparseMatrixCSR{FC})
+      test_operator(FC, CuVector{FC}, CuMatrix{FC}, CuSparseMatrixCSR{FC})
     end
   end
 
