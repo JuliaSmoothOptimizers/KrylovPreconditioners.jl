@@ -31,7 +31,7 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
                 return AMD_KrylovOperator{T}(T, m, n, nrhs, transa, descA, buffer_size, buffer)
             else
                 alpha = Ref{T}(one(T))
-                beta = Ref{T}(zeto(T))
+                beta = Ref{T}(zero(T))
                 descA = rocSPARSE.ROCSparseMatrixDescriptor(A, 'O')
                 descX = rocSPARSE.ROCDenseMatrixDescriptor(T, n, nrhs)
                 descY = rocSPARSE.ROCDenseMatrixDescriptor(T, m, nrhs)
