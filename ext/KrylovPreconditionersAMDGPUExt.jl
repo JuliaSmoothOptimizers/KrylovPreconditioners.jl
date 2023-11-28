@@ -3,8 +3,8 @@ using LinearAlgebra
 using AMDGPU
 using AMDGPU.rocSPARSE
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
-import LinearAlgebra: ldiv!
-using SparseArrays
+import LinearAlgebra: ldiv!, mul!
+import Base: size, eltype
 
 using KrylovPreconditioners
 const KP = KrylovPreconditioners
@@ -14,5 +14,6 @@ const KA = KernelAbstractions
 include("AMDGPU/ic0.jl")
 include("AMDGPU/ilu0.jl")
 include("AMDGPU/blockjacobi.jl")
+# include("AMDGPU/operators.jl")
 
 end
