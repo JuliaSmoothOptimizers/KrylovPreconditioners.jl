@@ -12,7 +12,7 @@ eltype(A::CUDA_KrylovOperator{T}) where T = T
 size(A::CUDA_KrylovOperator) = (m, n)
 
 for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
-                                     (:(CuSparseMatrixCSC{T,Cint}), :BlasFloat)
+                                     (:(CuSparseMatrixCSC{T,Cint}), :BlasFloat))
   @eval begin
     function KP.KrylovOperator(A::$SparseMatrixType; nrhs::Int=1, transa::Char='N') where T <: $BlasType
         m,n = size(A)
