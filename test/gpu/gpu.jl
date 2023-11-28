@@ -60,6 +60,8 @@ function test_operator(FC, V, DM, SM)
 
   A_cpu = rand(FC, m, n)
   A_cpu = sparse(A_cpu)
+  A_gpu = SM(A_cpu)
+
   opA_gpu = KrylovOperator(A_gpu)
   for i = 1:5
     y_cpu = rand(FC, m)
