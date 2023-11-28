@@ -33,7 +33,8 @@ steps:
       julia --color=yes --project=test/gpu -e '
         using Pkg
         Pkg.develop(path=".")
-        Pkg.add("AMDGPU")
+        # Pkg.add("AMDGPU")
+        Pkg.add(url="https://github.com/JuliaGPU/AMDGPU.jl", rev="master")
         Pkg.add("Krylov")
         Pkg.instantiate()
         include("test/gpu/amd.jl")'

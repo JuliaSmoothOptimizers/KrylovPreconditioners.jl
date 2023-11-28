@@ -50,9 +50,9 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
 end
 
 function LinearAlgebra.mul!(y::ROCVector{T}, A::AMD_KrylovOperator{T}, x::ROCVector{T}) where T <: BlasFloat
-    (length(y) != A.m) && throw(DimensionMismatch(""))
-    (length(x) != A.n) && throw(DimensionMismatch(""))
-    (A.nrhs != 1) && throw(DimensionMismatch(""))
+    (length(y) != A.m) && throw(DimensionMismatch("length(y) != A.m"))
+    (length(x) != A.n) && throw(DimensionMismatch("length(x) != A.n"))
+    (A.nrhs == 1) || throw(DimensionMismatch("A.nrhs != 1"))
     descY = rocSPARSE.ROCDenseVectorDescriptor(y)
     descX = rocSPARSE.ROCDenseVectorDescriptor(x)
     algo = rocSPARSE.rocsparse_spmv_alg_default
@@ -63,9 +63,9 @@ end
 function LinearAlgebra.mul!(Y::ROCMatrix{T}, A::AMD_KrylovOperator{T}, X::ROCMatrix{T}) where T <: BlasFloat
     mY, nY = size(Y)
     mX, nX = size(X)
-    (mY != A.m) && throw(DimensionMismatch(""))
-    (mX != A.n) && throw(DimensionMismatch(""))
-    (nY == nX == A.nrhs) || throw(DimensionMismatch(""))
+    (mY != A.m) && throw(DimensionMismatch("mY != A.m"))
+    (mX != A.n) && throw(DimensionMismatch("mX != A.n"))
+    (nY == nX == A.nrhs) || throw(DimensionMismatch("nY != A.nrhs or nX != A.nrhs"))
     descY = rocSPARSE.ROCDenseMatrixDescriptor(Y)
     descX = rocSPARSE.ROCDenseMatrixDescriptor(X)
     algo = rocSPARSE.rocsparse_spmm_alg_default
