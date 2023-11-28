@@ -1,8 +1,8 @@
 mutable struct CUDA_KrylovOperator{T}
+    type::Type{T}
     m::Int
     n::Int
     nrhs::Int
-    type::T
     transa::Char
     descA::CUSPARSE.CuSparseMatrixDescriptor
     buffer::CuVector{UInt8}
@@ -27,7 +27,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 buffer_size = Ref{Csize_t}()
                 CUSPARSE.cusparseSpMV_bufferSize(CUSPARSE.handle(), transa, alpha, descA, descX, beta, descY, T, algo, buffer_size)
                 buffer = CuVector{UInt8}(undef, buffer_size[])
-                return CUDA_KrylovOperator{T}(m, n, nrhs, transa, descA, buffer)
+                return CUDA_KrylovOperator{T}(T, m, n, nrhs, transa, descA, buffer)
             else
                 alpha = Ref{T}(one(T))
                 beta = Ref{T}(zeto(T))
@@ -40,7 +40,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 CUSPARSE.cusparseSpMM_bufferSize(CUSPARSE.handle(), transa, transb, alpha, descA, descX, beta, descY, T, algo, buffer_size)
                 buffer = CuVector{UInt8}(undef, buffer_size[])
                 CUSPARSE.cusparseSpMM_preprocess(CUSPARSE.handle(), transa, transb, alpha, descA, descX, beta, descY, T, algo, buffer)
-                return CUDA_KrylovOperator{T}(m, n, nrhs, transa, descA, buffer)
+                return CUDA_KrylovOperator{T}(T, m, n, nrhs, transa, descA, buffer)
             end
         end
     end
