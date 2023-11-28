@@ -26,17 +26,17 @@ include("gpu.jl")
     end
   end
 
-  # @testset "KrylovOperator" begin
-  #   @testset "ROCSparseMatrixCOO -- $FC" for FC in (Float64, ComplexF64)
-  #     test_operator(FC, ROCVector{FC}, ROCSparseMatrixCOO{FC})
-  #   end
-  #   @testset "ROCSparseMatrixCSC -- $FC" for FC in (Float64, ComplexF64)
-  #     test_operator(FC, ROCVector{FC}, ROCSparseMatrixCSC{FC})
-  #   end
-  #   @testset "ROCSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
-  #     test_operator(FC, ROCVector{FC}, ROCSparseMatrixCSR{FC})
-  #   end
-  # end
+  @testset "KrylovOperator" begin
+    @testset "ROCSparseMatrixCOO -- $FC" for FC in (Float64, ComplexF64)
+      test_operator(FC, ROCVector{FC}, ROCMatrix{FC}, ROCSparseMatrixCOO{FC})
+    end
+    @testset "ROCSparseMatrixCSC -- $FC" for FC in (Float64, ComplexF64)
+      test_operator(FC, ROCVector{FC}, ROCMatrix{FC}, ROCSparseMatrixCSC{FC})
+    end
+    @testset "ROCSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
+      test_operator(FC, ROCVector{FC}, ROCMatrix{FC}, ROCSparseMatrixCSR{FC})
+    end
+  end
 
   @testset "Block Jacobi preconditioner" begin
       if AMDGPU.functional()
