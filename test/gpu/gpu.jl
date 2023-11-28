@@ -42,14 +42,14 @@ function test_ilu0(FC, V, M)
   @test norm(r_gpu) ≤ 1e-8
 end
 
-function test_operator(FC, V, M)
+function test_operator(FC, V, DM, SM)
+  m = 200
   n = 100
-  R = real(FC)
   A_cpu = rand(FC, n, n)
   A_cpu = sparse(A_cpu)
   b_cpu = rand(FC, n)
 
-  A_gpu = M(A_cpu)
+  A_gpu = SM(A_cpu)
   b_gpu = V(b_cpu)
   opA_gpu = KrylovOperator(A_gpu)
 
@@ -57,6 +57,27 @@ function test_operator(FC, V, M)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.solved
   @test norm(r_gpu) ≤ 1e-8
+
+  A_cpu = rand(FC, m, n)
+  A_cpu = sparse(A_cpu)
+  opA_gpu = KrylovOperator(A_gpu)
+  for i = 1:5
+    y_cpu = rand(FC, m)
+    y_gpu = V(y_cpu)
+    x_cpu = rand(FC, n)
+    x_gpu = V(x_cpu)
+    mul!(y_gpu, opA_gpu, x_gpu)
+  end
+
+  nrhs = 3
+  opA_gpu = KrylovOperator(A_gpu; nrhs)
+  for i = 1:5
+    Y_cpu = rand(FC, m, nrhs)
+    Y_gpu = DM(Y_cpu)
+    X_cpu = rand(FC, n, nrhs)
+    X_gpu = DM(X_cpu)
+    mul!(Y_gpu, opA_gpu, X_gpu)
+  end
 end
 
 _get_type(J::SparseMatrixCSC) = Vector{Float64}
