@@ -43,7 +43,8 @@ function test_ilu0(FC, V, M)
 end
 
 function test_operator(FC, V, M)
-  n = 100
+  m = 100
+  n = 50
   R = real(FC)
   A_cpu = rand(FC, m, n)
   A_cpu = sparse(A_cpu)
