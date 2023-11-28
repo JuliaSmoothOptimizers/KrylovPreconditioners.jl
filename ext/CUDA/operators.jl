@@ -52,7 +52,8 @@ function LinearAlgebra.mul!(y::CuVector{T}, A::CUDA_KrylovOperator{T}, x::CuVect
     (A.nrhs != 1) && throw(DimensionMismatch(""))
     descY = CUSPARSE.CuDenseVectorDescriptor(y)
     descX = CUSPARSE.CuDenseVectorDescriptor(x)
-    CUSPARSE.cusparseSpMV(CUSPARSE.handle(), A.transa, one(T), A.descA, descX, zero(T), descY, T, A.algo, A.buffer)
+    algo = CUSPARSE.CUSPARSE_SPMV_ALG_DEFAULT
+    CUSPARSE.cusparseSpMV(CUSPARSE.handle(), A.transa, one(T), A.descA, descX, zero(T), descY, T, algo, A.buffer)
 end
 
 function LinearAlgebra.mul!(Y::CuMatrix{T}, A::CUDA_KrylovOperator{T}, X::CuMatrix{T}) where T <: BlasFloat
@@ -63,5 +64,6 @@ function LinearAlgebra.mul!(Y::CuMatrix{T}, A::CUDA_KrylovOperator{T}, X::CuMatr
     (nY == nX == A.nrhs) || throw(DimensionMismatch(""))
     descY = CUSPARSE.CuDenseMatrixDescriptor(Y)
     descX = CUSPARSE.CuDenseMatrixDescriptor(X)
-    CUSPARSE.cusparseSpMM(CUSPARSE.handle(), A.transa, 'N', one(T), A.descA, descX, zero(T), descY, T, A.algo, A.buffer)
+    algo = CUSPARSE.CUSPARSE_SPMM_ALG_DEFAULT
+    CUSPARSE.cusparseSpMM(CUSPARSE.handle(), A.transa, 'N', one(T), A.descA, descX, zero(T), descY, T, algo, A.buffer)
 end
