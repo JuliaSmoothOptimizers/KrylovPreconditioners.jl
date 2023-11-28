@@ -13,7 +13,7 @@ abstract type AbstractKrylovPreconditioner end
 export AbstractKrylovPreconditioner
 
 abstract type AbstractKrylovOperator{T} end
-export AbstractKrylovOperator end
+export AbstractKrylovOperator
 
 function KrylovOperator end
 export KrylovOperator
