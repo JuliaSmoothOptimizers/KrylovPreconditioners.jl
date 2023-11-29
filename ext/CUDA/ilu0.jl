@@ -1,31 +1,41 @@
-mutable struct NVIDIA_ILU0{SM,DM} <: AbstractKrylovPreconditioner
+mutable struct NVIDIA_ILU0{SM} <: AbstractKrylovPreconditioner
   P::SM
-  z::DM
 end
 
 for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
                                      (:(CuSparseMatrixCSC{T,Cint}), :BlasReal))
   @eval begin
-    function KP.kp_ilu0(A::$SparseMatrixType; nrhs::Int=1) where T <: $BlasType
+    function KP.kp_ilu0(A::$SparseMatrixType) where T <: $BlasType
       P = CUSPARSE.ilu02(A)
       n = checksquare(A)
-      z = nrhs == 1 ? CuVector{T}(undef, n) : CuMatrix{T}(undef, n, nrhs)
-      return NVIDIA_ILU0(P,z)
+      return NVIDIA_ILU0(P)
     end
   end
 end
 
 for ArrayType in (:(CuVector{T}), :(CuMatrix{T}))
   @eval begin
-    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{CuSparseMatrixCSR{T,Cint},<:$ArrayType}, x::$ArrayType) where T <: BlasFloat
-      ldiv!(ilu.z, UnitLowerTriangular(ilu.P), x)  # Forward substitution with L
-      ldiv!(y, UpperTriangular(ilu.P), ilu.z)      # Backward substitution with U
+    function ldiv!(ilu::NVIDIA_ILU0{CuSparseMatrixCSR{T,Cint}}, x::$ArrayType) where T <: BlasFloat
+      ldiv!(UnitLowerTriangular(ilu.P), x)  # Forward substitution with L
+      ldiv!(UpperTriangular(ilu.P), x)      # Backward substitution with U
+      return x
+    end
+
+    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{CuSparseMatrixCSR{T,Cint}}, x::$ArrayType) where T <: BlasFloat
+      copyto!(y, x)
+      ldiv!(ilu, y)
       return y
     end
 
-    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{CuSparseMatrixCSC{T,Cint},<:$ArrayType}, x::$ArrayType) where T <: BlasReal
-      ldiv!(ilu.z, LowerTriangular(ilu.P), x)      # Forward substitution with L
-      ldiv!(y, UnitUpperTriangular(ilu.P), ilu.z)  # Backward substitution with U
+    function ldiv!(ilu::NVIDIA_ILU0{CuSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
+      ldiv!(LowerTriangular(ilu.P), x)      # Forward substitution with L
+      ldiv!(UnitUpperTriangular(ilu.P), x)  # Backward substitution with U
+      return x
+    end
+
+    function ldiv!(y::$ArrayType, ilu::NVIDIA_ILU0{CuSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
+      copyto!(y, x)
+      ldiv!(ilu, y)
       return y
     end
   end

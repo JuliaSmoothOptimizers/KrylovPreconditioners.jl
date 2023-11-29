@@ -39,9 +39,7 @@ include("gpu.jl")
   end
 
   @testset "Block Jacobi preconditioner" begin
-      if AMDGPU.functional()
-          test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSR)
-      end
+    test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSR)
   end
 
 end
