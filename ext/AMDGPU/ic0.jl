@@ -14,17 +14,27 @@ end
 
 for ArrayType in (:(ROCVector{T}), :(ROCMatrix{T}))
   @eval begin
+    function ldiv!(ic::AMD_IC0{ROCSparseMatrixCSR{T,Cint}}, x::$ArrayType) where T <: BlasFloat
+      ldiv!(LowerTriangular(ic.P), x)   # Forward substitution with L
+      ldiv!(LowerTriangular(ic.P)', x)  # Backward substitution with Lᴴ
+      return x
+    end
+
     function ldiv!(y::$ArrayType, ic::AMD_IC0{ROCSparseMatrixCSR{T,Cint}}, x::$ArrayType) where T <: BlasFloat
       copyto!(y, x)
-      ldiv!(LowerTriangular(ic.P), y)   # Forward substitution with L
-      ldiv!(LowerTriangular(ic.P)', y)  # Backward substitution with Lᴴ
+      ldiv!(ic, y)
       return y
+    end
+
+    function ldiv!(ic::AMD_IC0{ROCSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
+      ldiv!(UpperTriangular(ic.P)', x)  # Forward substitution with L
+      ldiv!(UpperTriangular(ic.P), x)   # Backward substitution with Lᴴ
+      return x
     end
 
     function ldiv!(y::$ArrayType, ic::AMD_IC0{ROCSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
       copyto!(y, x)
-      ldiv!(UpperTriangular(ic.P)', y)  # Forward substitution with L
-      ldiv!(UpperTriangular(ic.P), y)   # Backward substitution with Lᴴ
+      ldiv!(ic, y)
       return y
     end
   end
