@@ -1,5 +1,13 @@
 KP.BlockJacobiPreconditioner(J::rocSPARSE.ROCSparseMatrixCSR; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
 
+function KP.create_blocklist(cublocks::ROCArray, npart)
+    blocklist = Array{CuArray{Float64,2}}(undef, npart)
+    for b in 1:npart
+        blocklist[b] = ROCMatrix{Float64}(undef, size(cublocks,1), size(cublocks,2))
+    end
+    return blocklist
+end
+
 function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::ROCBackend)
     nblocks = p.nblocks
     fillblock_gpu_kernel! = KP._fillblock_gpu!(device)
@@ -13,14 +21,13 @@ function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::ROCBackend)
     )
     KA.synchronize(device)
     # Invert blocks begin
-    blocklist = Array{ROCArray{Float64,2}}(undef, nblocks)
     for b in 1:nblocks
-        blocklist[b] = p.cublocks[:,:,b]
+        p.blocklist[b] .= p.cublocks[:,:,b]
     end
-    AMDGPU.@sync pivot, info = AMDGPU.rocSOLVER.getrf_batched!(blocklist)
-    AMDGPU.@sync pivot, info, blocklist = AMDGPU.rocSOLVER.getri_batched!(blocklist, pivot)
+    AMDGPU.@sync pivot, info = AMDGPU.rocSOLVER.getrf_batched!(p.blocklist)
+    AMDGPU.@sync pivot, info, p.blocklist = AMDGPU.rocSOLVER.getri_batched!(p.blocklist, pivot)
     for b in 1:nblocks
-        p.cublocks[:,:,b] .= blocklist[b]
+        p.cublocks[:,:,b] .= p.blocklist[b]
     end
     return
 end

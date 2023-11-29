@@ -1,5 +1,13 @@
 KP.BlockJacobiPreconditioner(J::CUSPARSE.CuSparseMatrixCSR; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
 
+function KP.create_blocklist(cublocks::CuArray, npart)
+    blocklist = Array{CuArray{Float64,2}}(undef, npart)
+    for b in 1:npart
+        blocklist[b] = CuMatrix{Float64}(undef, size(cublocks,1), size(cublocks,2))
+    end
+    return blocklist
+end
+
 function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::CUDABackend)
     nblocks = p.nblocks
     fillblock_gpu_kernel! = KP._fillblock_gpu!(device)
@@ -13,14 +21,13 @@ function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::CUDABackend)
     )
     KA.synchronize(device)
     # Invert blocks begin
-    blocklist = Array{CuArray{Float64,2}}(undef, nblocks)
     for b in 1:nblocks
-        blocklist[b] = p.cublocks[:,:,b]
+        p.blocklist[b] .= p.cublocks[:,:,b]
     end
-    CUDA.@sync pivot, info = CUDA.CUBLAS.getrf_batched!(blocklist, true)
-    CUDA.@sync pivot, info, blocklist = CUDA.CUBLAS.getri_batched(blocklist, pivot)
+    CUDA.@sync pivot, info = CUDA.CUBLAS.getrf_batched!(p.blocklist, true)
+    CUDA.@sync pivot, info, p.blocklist = CUDA.CUBLAS.getri_batched(p.blocklist, pivot)
     for b in 1:nblocks
-        p.cublocks[:,:,b] .= blocklist[b]
+        p.cublocks[:,:,b] .= p.blocklist[b]
     end
     return
 end
