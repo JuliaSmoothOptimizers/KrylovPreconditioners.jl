@@ -42,7 +42,7 @@ Overlapping-Schwarz preconditioner.
 * `part`: Partitioning as output by Metis
 * `cupart`: `part` transferred to the GPU
 """
-struct BlockJacobiPreconditioner{AT,GAT,VI,GVI,GMT,MI,GMI} <: AbstractKrylovPreconditioner
+mutable struct BlockJacobiPreconditioner{AT,GAT,VI,GVI,GMT,MI,GMI} <: AbstractKrylovPreconditioner
     nblocks::Int64
     blocksize::Int64
     partitions::MI
@@ -58,6 +58,16 @@ struct BlockJacobiPreconditioner{AT,GAT,VI,GVI,GMT,MI,GMI} <: AbstractKrylovPrec
     part::VI
     cupart::GVI
     id::GMT
+    blocklist::Vector{GMT}
+    timer_update::Float64
+end
+
+function create_blocklist(blocks::Array, npart)
+    blocklist = Array{Array{Float64,2}}(undef, npart)
+    for b in 1:npart
+        blocklist[b] = Matrix{Float64}(undef, size(blocks,1), size(blocks,2))
+    end
+    return blocklist
 end
 
 function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0) where {}
@@ -117,6 +127,7 @@ function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0) wher
     cublocks = adapt(device, blocks)
     cumap = adapt(device, map)
     cupart = adapt(device, part)
+    blocklist = create_blocklist(cublocks, npart)
     return BlockJacobiPreconditioner(
         npart, blocksize, bpartitions,
         cubpartitions, lpartitions,
@@ -124,7 +135,7 @@ function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0) wher
         curest_size, blocks,
         cublocks, map,
         cumap, part,
-        cupart, id
+        cupart, id, blocklist, 0.0
     )
 end
 
@@ -147,7 +158,23 @@ Base.eltype(::BlockJacobiPreconditioner) = Float64
 # overall 3x slower than this custom kernel : due to the various sizes
 # of the blocks, gemm_strided is performing too many unecessary operations,
 # impairing its performance.
-@kernel function mblock_kernel!(y, b, p_len, rp_len, part, blocks)
+@kernel function mblock_b_kernel!(y, b, p_len, rp_len, part, blocks)
+    i, j = @index(Global, NTuple)
+    len = p_len[i]
+    rlen = rp_len[i]
+
+    if j <= rlen
+        accum = 0.0
+        idxA = @inbounds part[j, i]
+        for k=1:len
+            idxB = @inbounds part[k, i]
+            @inbounds accum = accum + blocks[j, k, i]*b[idxB]
+        end
+        @inbounds y[idxA] = accum
+    end
+end
+
+@kernel function mblock_B_kernel!(y, b, p_len, rp_len, part, blocks)
     p = size(b, 2)
     i, j = @index(Global, NTuple)
     len = p_len[i]
@@ -161,7 +188,7 @@ Base.eltype(::BlockJacobiPreconditioner) = Float64
                 idxB = @inbounds part[k, i]
                 @inbounds accum = accum + blocks[j, k, i]*b[idxB,ℓ]
             end
-            y[idxA,ℓ] = accum
+            @inbounds y[idxA,ℓ] = accum
         end
     end
 end
@@ -202,12 +229,13 @@ function LinearAlgebra.mul!(y, C::BlockJacobiPreconditioner, b::AbstractVector{T
     fill!(y, zero(T))
     max_rlen = maximum(C.rest_size)
     ndrange = (C.nblocks, max_rlen)
-    mblock_kernel!(device)(
+    C.timer_update += @elapsed begin mblock_b_kernel!(device)(
         y, b, C.culpartitions, C.curest_size,
         C.cupartitions, C.cublocks,
         ndrange=ndrange,
     )
     KA.synchronize(device)
+    end
 end
 
 function LinearAlgebra.mul!(Y, C::BlockJacobiPreconditioner, B::AbstractMatrix{T}) where T
@@ -216,12 +244,13 @@ function LinearAlgebra.mul!(Y, C::BlockJacobiPreconditioner, B::AbstractMatrix{T
     fill!(Y, zero(T))
     max_rlen = maximum(C.rest_size)
     ndrange = (C.nblocks, max_rlen)
-    mblock_kernel!(device)(
+    C.timer_update += @elapsed begin mblock_B_kernel!(device)(
         Y, B, C.culpartitions, C.curest_size,
         C.cupartitions, C.cublocks,
         ndrange=ndrange,
     )
     KA.synchronize(device)
+    end
 end
 
 """
@@ -315,5 +344,3 @@ function Base.show(precond::BlockJacobiPreconditioner)
             " Mbytes = ", (nblock*nblock*npartitions*8.0)/(1024.0*1024.0))
     println("Block Jacobi block size: $(precond.nJs)")
 end
-
-# NVIDIA
