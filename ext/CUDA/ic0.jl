@@ -44,7 +44,7 @@ for (bname, aname, sname, T) in ((:cusparseScsric02_bufferSize, :cusparseScsric0
 
     function KP.update!(p::NVIDIA_IC0{CuSparseMatrixCSR{$T,Cint}}, A::CuSparseMatrixCSR{$T,Cint})
       copyto!(p.P.nzVal, A.nzVal)
-      CUSPARSE.$sname(CUSPARSE.handle(), p.n, nnz(P.p), p.desc, p.P.nzVal, p.P.rowPtr, p.P.colVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
+      CUSPARSE.$sname(CUSPARSE.handle(), p.n, nnz(p.P), p.desc, p.P.nzVal, p.P.rowPtr, p.P.colVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
       return p
     end
 
