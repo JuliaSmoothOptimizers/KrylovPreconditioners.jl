@@ -14,6 +14,7 @@ function test_ic0(FC, V, M)
   A_gpu = M(A_cpu)
   b_gpu = V(b_cpu)
   P = kp_ic0(A_gpu)
+  update!(P, A_gpu)
 
   x_gpu, stats = cg(A_gpu, b_gpu, M=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
@@ -35,6 +36,7 @@ function test_ilu0(FC, V, M)
   A_gpu = M(A_cpu)
   b_gpu = V(b_cpu)
   P = kp_ilu0(A_gpu)
+  update!(P, A_gpu)
 
   x_gpu, stats = gmres(A_gpu, b_gpu, N=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
@@ -132,7 +134,7 @@ function test_block_jacobi(device, AT, SMT)
     x = similar(b); r = similar(b)
     nblocks = 2
     precond = BlockJacobiPreconditioner(A, nblocks, device)
-    KrylovPreconditioners.update(precond, A, device)
+    update!(precond, A)
 
     S = _get_type(A)
     linear_solver = Krylov.BicgstabSolver(n, m, S)

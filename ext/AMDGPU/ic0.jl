@@ -45,6 +45,6 @@ for ArrayType in (:(ROCVector{T}), :(ROCMatrix{T}))
   end
 end
 
-function KP.update(p::AMD_ICU0, A, device::CUDABackend)
-    p.P = CUSPARSE.ic02(A, 'O')
+function KP.update!(p::AMD_IC0, A)
+    p.P = rocSPARSE.ic0(A, 'O')
 end

@@ -11,8 +11,8 @@ import LinearAlgebra: ldiv!
 
 abstract type AbstractKrylovPreconditioner end
 export AbstractKrylovPreconditioner
-update(p::AbstractKrylovPreconditioner, A, device::KA.Backend) = error("Update for $(typeof(p)) not implemented")
-export update, get_timer, reset_timer!
+update!(p::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(p)) not implemented")
+export update!, get_timer, reset_timer!
 
 function get_timer(p::AbstractKrylovPreconditioner)
     return p.timer_update
