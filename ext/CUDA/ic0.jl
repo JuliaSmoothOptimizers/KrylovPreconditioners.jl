@@ -10,7 +10,7 @@ mutable struct IC0Info
     end
 end
 
-Base.unsafe_convert(::Type{CUSPARSE.csric02Info_t}, info::IC0Info) = info.info
+unsafe_convert(::Type{CUSPARSE.csric02Info_t}, info::IC0Info) = info.info
 
 mutable struct NVIDIA_IC0{SM} <: AbstractKrylovPreconditioner
   desc::CUSPARSE.cusparseMatDescr_t
@@ -41,7 +41,7 @@ for (bname, aname, sname, T) in ((:cusparseScsric02_bufferSize, :cusparseScsric0
       return NVIDIA_IC0(desc, buffer, info, 0.0, P)
     end
 
-    function KP.update!(p::NVIDIA_IC0, A::CuSparseMatrixCSR{$T,Cint})
+    function KP.update!(p::NVIDIA_IC0{CuSparseMatrixCSR{$T,Cint}}, A::CuSparseMatrixCSR{$T,Cint})
       p.P = CUSPARSE.ic02(A)
     end
 
@@ -61,7 +61,7 @@ for (bname, aname, sname, T) in ((:cusparseScsric02_bufferSize, :cusparseScsric0
       return NVIDIA_IC0(desc, buffer, info, 0.0, P)
     end
 
-    function KP.update!(p::NVIDIA_IC0, A::CuSparseMatrixCSC{$T,Cint})
+    function KP.update!(p::NVIDIA_IC0{CuSparseMatrixCSC{$T,Cint}}, A::CuSparseMatrixCSC{$T,Cint})
       p.P = CUSPARSE.ic02(A)
     end
   end

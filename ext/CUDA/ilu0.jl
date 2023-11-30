@@ -10,7 +10,7 @@ mutable struct ILU0Info
     end
 end
 
-Base.unsafe_convert(::Type{CUSPARSE.csrilu02Info_t}, info::ILU0Info) = info.info
+unsafe_convert(::Type{CUSPARSE.csrilu02Info_t}, info::ILU0Info) = info.info
 
 mutable struct NVIDIA_ILU0{SM} <: AbstractKrylovPreconditioner
   desc::CUSPARSE.cusparseMatDescr_t
@@ -41,7 +41,7 @@ for (bname, aname, sname, T) in ((:cusparseScsrilu02_bufferSize, :cusparseScsril
       return NVIDIA_ILU0(desc, buffer, info, 0.0, P)
     end
 
-    function KP.update!(p::NVIDIA_ILU0{CuSparseMatrixCSC{$T,Cint}}, A::CuSparseMatrixCSR{$T,Cint})
+    function KP.update!(p::NVIDIA_ILU0{CuSparseMatrixCSR{$T,Cint}}, A::CuSparseMatrixCSR{$T,Cint})
       p.P = CUSPARSE.ilu02(A)
     end
 

@@ -5,7 +5,7 @@ using AMDGPU
 using AMDGPU.rocSPARSE
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!, mul!
-import Base: size, eltype
+import Base: size, eltype, unsafe_convert
 
 using KrylovPreconditioners
 const KP = KrylovPreconditioners
