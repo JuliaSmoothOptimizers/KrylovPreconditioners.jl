@@ -60,6 +60,7 @@ mutable struct BlockJacobiPreconditioner{AT,GAT,VI,GVI,GMT,MI,GMI} <: AbstractKr
     id::GMT
     blocklist::Vector{GMT}
     timer_update::Float64
+    device::KA.Backend
 end
 
 function create_blocklist(blocks::Array, npart)
@@ -135,7 +136,8 @@ function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0) wher
         curest_size, blocks,
         cublocks, map,
         cumap, part,
-        cupart, id, blocklist, 0.0
+        cupart, id, blocklist, 0.0,
+        device
     )
 end
 
@@ -311,14 +313,14 @@ Fill the dense blocks of the preconditioner from the sparse CSR matrix arrays
 end
 
 """
-    function update(J::SparseMatrixCSC, p)
+    function update!(J::SparseMatrixCSC, p)
 
 Update the preconditioner `p` from the sparse Jacobian `J` in CSC format for the CPU
 
 Note that this implements the same algorithm as for the GPU and becomes very slow on CPU with growing number of blocks.
 
 """
-function update(p, J::SparseMatrixCSC, device)
+function update!(p, J::SparseMatrixCSC)
     # TODO: Enabling threading leads to a crash here
     for b in 1:p.nblocks
         p.blocks[:,:,b] = p.id[:,:]

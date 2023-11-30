@@ -46,7 +46,7 @@ for ArrayType in (:(CuVector{T}), :(CuMatrix{T}))
   end
 end
 
-function KP.update(p::NVIDIA_ICU0, A, device::CUDABackend)
+function KP.update!(p::NVIDIA_IC0, A)
     p.P = CUSPARSE.ic02(A)
 end
 
