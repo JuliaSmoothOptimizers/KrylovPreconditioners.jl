@@ -1,5 +1,6 @@
 mutable struct NVIDIA_IC0{SM} <: AbstractKrylovPreconditioner
   P::SM
+  timer_update::Float64
 end
 
 for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
@@ -8,7 +9,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T,Cint}), :BlasFloat),
     function KP.kp_ic0(A::$SparseMatrixType) where T <: $BlasType
       P = CUSPARSE.ic02(A)
       n = checksquare(A)
-      return NVIDIA_IC0(P)
+      return NVIDIA_IC0(P,0.0)
     end
   end
 end
@@ -23,7 +24,9 @@ for ArrayType in (:(CuVector{T}), :(CuMatrix{T}))
 
     function ldiv!(y::$ArrayType, ic::NVIDIA_IC0{CuSparseMatrixCSR{T,Cint}}, x::$ArrayType) where T <: BlasFloat
       copyto!(y, x)
+      ic.timer_update += @elapsed begin
       ldiv!(ic, y)
+      end
       return y
     end
 
@@ -35,8 +38,15 @@ for ArrayType in (:(CuVector{T}), :(CuMatrix{T}))
 
     function ldiv!(y::$ArrayType, ic::NVIDIA_IC0{CuSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
       copyto!(y, x)
+      ic.timer_update += @elapsed begin
       ldiv!(ic, y)
+      end
       return y
     end
   end
 end
+
+function KP.update(p::NVIDIA_ICU0, A, device::CUDABackend)
+    p.P = CUSPARSE.ic02(A)
+end
+

@@ -1,4 +1,4 @@
-export BlockJacobiPreconditioner, update
+export BlockJacobiPreconditioner
 
 using LightGraphs, Metis
 
