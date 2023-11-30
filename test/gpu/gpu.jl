@@ -72,6 +72,18 @@ function test_operator(FC, V, DM, SM)
     mul!(y_gpu, opA_gpu, x_gpu)
     @test collect(y_gpu) ≈ y_cpu
   end
+  for j = 1:5
+    y_cpu = rand(FC, m)
+    x_cpu = rand(FC, n)
+    A_cpu2 = A_cpu + j*I
+    mul!(y_cpu, A_cpu2, x_cpu)
+    y_gpu = V(y_cpu)
+    x_gpu = V(x_cpu)
+    A_gpu2 = A_gpu + j*I
+    update_operator!(opA_gpu, A_gpu2)
+    mul!(y_gpu, opA_gpu, x_gpu)
+    @test collect(y_gpu) ≈ y_cpu
+  end
 
   nrhs = 3
   opA_gpu = KrylovOperator(A_gpu; nrhs)
@@ -81,6 +93,18 @@ function test_operator(FC, V, DM, SM)
     mul!(Y_cpu, A_cpu, X_cpu)
     Y_gpu = DM(Y_cpu)
     X_gpu = DM(X_cpu)
+    mul!(Y_gpu, opA_gpu, X_gpu)
+    @test collect(Y_gpu) ≈ Y_cpu
+  end
+  for j = 1:5
+    Y_cpu = rand(FC, m, nrhs)
+    X_cpu = rand(FC, n, nrhs)
+    A_cpu2 = A_cpu + j*I
+    mul!(Y_cpu, A_cpu2, X_cpu)
+    Y_gpu = DM(Y_cpu)
+    X_gpu = DM(X_cpu)
+    A_gpu2 = A_gpu + j*I
+    update_operator!(opA_gpu, A_gpu2)
     mul!(Y_gpu, opA_gpu, X_gpu)
     @test collect(Y_gpu) ≈ Y_cpu
   end

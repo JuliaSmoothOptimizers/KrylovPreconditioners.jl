@@ -18,6 +18,9 @@ export AbstractKrylovOperator
 function KrylovOperator end
 export KrylovOperator
 
+function update_operator! end
+export update_operator!
+
 # Preconditioners
 include("ic0.jl")
 include("ilu0.jl")
