@@ -13,6 +13,7 @@ end
 unsafe_convert(::Type{CUSPARSE.csric02Info_t}, info::IC0Info) = info.info
 
 mutable struct NVIDIA_IC0{SM} <: AbstractKrylovPreconditioner
+  n::Int
   desc::CUSPARSE.CuMatrixDescriptor
   buffer::CuVector{UInt8}
   info::IC0Info
@@ -38,12 +39,12 @@ for (bname, aname, sname, T) in ((:cusparseScsric02_bufferSize, :cusparseScsric0
       CUSPARSE.cusparseXcsric02_zeroPivot(CUSPARSE.handle(), info, posit)
       (posit[] ≥ 0) && error("Structural/numerical zero in A at ($(posit[]),$(posit[])))")
       CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, buffer)
-      return NVIDIA_IC0(desc, buffer, info, 0.0, P)
+      return NVIDIA_IC0(n, desc, buffer, info, 0.0, P)
     end
 
     function KP.update!(p::NVIDIA_IC0{CuSparseMatrixCSR{$T,Cint}}, A::CuSparseMatrixCSR{$T,Cint})
       copyto!(p.P.nzVal, A.nzVal)
-      CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(P.p), p.desc, p.P.nzVal, p.P.rowPtr, p.P.colVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
+      CUSPARSE.$sname(CUSPARSE.handle(), p.n, nnz(P.p), p.desc, p.P.nzVal, p.P.rowPtr, p.P.colVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
       return p
     end
 
@@ -60,12 +61,12 @@ for (bname, aname, sname, T) in ((:cusparseScsric02_bufferSize, :cusparseScsric0
       CUSPARSE.cusparseXcsric02_zeroPivot(CUSPARSE.handle(), info, posit)
       (posit[] ≥ 0) && error("Structural/numerical zero in A at ($(posit[]),$(posit[])))")
       CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, buffer)
-      return NVIDIA_IC0(desc, buffer, info, 0.0, P)
+      return NVIDIA_IC0(n, desc, buffer, info, 0.0, P)
     end
 
     function KP.update!(p::NVIDIA_IC0{CuSparseMatrixCSC{$T,Cint}}, A::CuSparseMatrixCSC{$T,Cint})
       copyto!(p.P.nzVal, A.nzVal)
-      CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(p.P), p.desc, p.P.nzVal, p.P.colPtr, p.P.rowVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
+      CUSPARSE.$sname(CUSPARSE.handle(), p.n, nnz(p.P), p.desc, p.P.nzVal, p.P.colPtr, p.P.rowVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
       return p
     end
   end
