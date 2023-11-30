@@ -45,6 +45,12 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 return NVIDIA_KrylovOperator{T}(T, m, n, nrhs, transa, descA, buffer)
             end
         end
+
+        function KP.update_operator!(A::NVIDIA_KrylovOperator{T}, B::$SparseMatrixType) where T <: $BlasFloat
+            descB = CUSPARSE.CuSparseMatrixDescriptor(B, 'O')
+            A.descA = descB
+            return A
+        end
     end
 end
 
