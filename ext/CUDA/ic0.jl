@@ -13,7 +13,7 @@ end
 unsafe_convert(::Type{CUSPARSE.csric02Info_t}, info::IC0Info) = info.info
 
 mutable struct NVIDIA_IC0{SM} <: AbstractKrylovPreconditioner
-  desc::CUSPARSE.cusparseMatDescr_t
+  desc::CUSPARSE.CuMatrixDescriptor
   buffer::CuVector{UInt8}
   info::IC0Info
   timer_update::Float64

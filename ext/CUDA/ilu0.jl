@@ -13,7 +13,7 @@ end
 unsafe_convert(::Type{CUSPARSE.csrilu02Info_t}, info::ILU0Info) = info.info
 
 mutable struct NVIDIA_ILU0{SM} <: AbstractKrylovPreconditioner
-  desc::CUSPARSE.cusparseMatDescr_t
+  desc::CUSPARSE.CuMatrixDescriptor
   buffer::CuVector{UInt8}
   info::ILU0Info
   timer_update::Float64
@@ -35,7 +35,7 @@ for (bname, aname, sname, T) in ((:cusparseScsrilu02_bufferSize, :cusparseScsril
       buffer = CuVector{UInt8}(undef, buffer_size[])
       CUSPARSE.$aname(CUSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, buffer)
       posit = Ref{Cint}(1)
-      CUSPARSE.cusparseXcsric02_zeroPivot(CUSPARSE.handle(), info, posit)
+      CUSPARSE.cusparseXcsrilu02_zeroPivot(CUSPARSE.handle(), info, posit)
       (posit[] ≥ 0) && error("Structural/numerical zero in A at ($(posit[]),$(posit[])))")
       CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, buffer)
       return NVIDIA_ILU0(desc, buffer, info, 0.0, P)
@@ -55,7 +55,7 @@ for (bname, aname, sname, T) in ((:cusparseScsrilu02_bufferSize, :cusparseScsril
       buffer = CuVector{UInt8}(undef, buffer_size[])
       CUSPARSE.$aname(CUSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, buffer)
       posit = Ref{Cint}(1)
-      CUSPARSE.cusparseXcsric02_zeroPivot(CUSPARSE.handle(), info, posit)
+      CUSPARSE.cusparseXcsrilu02_zeroPivot(CUSPARSE.handle(), info, posit)
       (posit[] ≥ 0) && error("Structural/numerical zero in A at ($(posit[]),$(posit[])))")
       CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, buffer)
       return NVIDIA_ILU0(desc, buffer, info, 0.0, P)
