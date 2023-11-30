@@ -42,7 +42,9 @@ for (bname, aname, sname, T) in ((:cusparseScsrilu02_bufferSize, :cusparseScsril
     end
 
     function KP.update!(p::NVIDIA_ILU0{CuSparseMatrixCSR{$T,Cint}}, A::CuSparseMatrixCSR{$T,Cint})
-      p.P = CUSPARSE.ilu02(A)
+      copyto!(p.P.nzVal, A.nzVal)
+      CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(p.P), p.desc, p.P.nzVal, p.P.rowPtr, p.P.colVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
+      return p
     end
 
     function KP.kp_ilu0(A::CuSparseMatrixCSC{$T,Cint})
@@ -62,7 +64,9 @@ for (bname, aname, sname, T) in ((:cusparseScsrilu02_bufferSize, :cusparseScsril
     end
 
     function KP.update!(p::NVIDIA_ILU0{CuSparseMatrixCSC{$T,Cint}}, A::CuSparseMatrixCSC{$T,Cint})
-      p.P = CUSPARSE.ilu02(A)
+      copyto!(p.P.nzVal, A.nzVal)
+      CUSPARSE.$sname(CUSPARSE.handle(), n, nnz(p.P), p.desc, p.P.nzVal, p.P.colPtr, p.P.rowVal, p.info, CUSPARSE.CUSPARSE_SOLVE_POLICY_USE_LEVEL, p.buffer)
+      return p
     end
   end
 end

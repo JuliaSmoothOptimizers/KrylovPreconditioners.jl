@@ -11,7 +11,8 @@ import LinearAlgebra: ldiv!
 
 abstract type AbstractKrylovPreconditioner end
 export AbstractKrylovPreconditioner
-update!(p::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(p)) not implemented")
+
+update!(p::AbstractKrylovPreconditioner, A::AbstractMatrix) = error("update!() for $(typeof(p)) is not implemented.")
 export update!, get_timer, reset_timer!
 
 function get_timer(p::AbstractKrylovPreconditioner)
