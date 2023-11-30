@@ -14,8 +14,18 @@ function test_ic0(FC, V, M)
   A_gpu = M(A_cpu)
   b_gpu = V(b_cpu)
   P = kp_ic0(A_gpu)
-  update!(P, A_gpu)
 
+  x_gpu, stats = cg(A_gpu, b_gpu, M=P, ldiv=true)
+  r_gpu = b_gpu - A_gpu * x_gpu
+  @test stats.niter ≤ 5
+  if (FC <: ComplexF64) && V.body.name.name == :ROCArray
+    @test_broken norm(r_gpu) ≤ 1e-6
+  else
+    @test norm(r_gpu) ≤ 1e-8
+  end
+
+  A_gpu = M(A_cpu + 200*I)
+  update!(P, A_gpu)
   x_gpu, stats = cg(A_gpu, b_gpu, M=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
@@ -36,8 +46,14 @@ function test_ilu0(FC, V, M)
   A_gpu = M(A_cpu)
   b_gpu = V(b_cpu)
   P = kp_ilu0(A_gpu)
-  update!(P, A_gpu)
 
+  x_gpu, stats = gmres(A_gpu, b_gpu, N=P, ldiv=true)
+  r_gpu = b_gpu - A_gpu * x_gpu
+  @test stats.niter ≤ 5
+  @test norm(r_gpu) ≤ 1e-8
+
+  A_gpu = M(A_cpu + 200*I)
+  update!(P, A_gpu)
   x_gpu, stats = gmres(A_gpu, b_gpu, N=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5

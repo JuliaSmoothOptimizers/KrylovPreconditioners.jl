@@ -8,7 +8,11 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T,Cint}), :BlasFloat)
   @eval begin
     function KP.kp_ilu0(A::$SparseMatrixType) where T <: $BlasType
       P = rocSPARSE.ilu0(A, 'O')
-      return AMD_ILU0(P,0.0)
+      return AMD_ILU0(P, 0.0)
+    end
+
+    function KP.update!(p::AMD_ILU0{$SparseMatrixType}, A::$SparseMatrixType) where T <: $BlasType
+      p.P = rocSPARSE.ilu0(A, 'O')
     end
   end
 end
@@ -43,8 +47,4 @@ for ArrayType in (:(ROCVector{T}), :(ROCMatrix{T}))
       return y
     end
   end
-end
-
-function KP.update!(p::AMD_ILU0, A)
-    p.P = rocSPARSE.ilu0(A, 'O')
 end
