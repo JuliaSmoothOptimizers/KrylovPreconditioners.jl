@@ -1,5 +1,6 @@
 module KrylovPreconditionersCUDAExt
 using LinearAlgebra
+using SparseArrays
 using CUDA
 using CUDA.CUSPARSE
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
