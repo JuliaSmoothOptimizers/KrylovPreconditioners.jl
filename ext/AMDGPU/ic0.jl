@@ -1,5 +1,6 @@
 mutable struct AMD_IC0{SM}
   P::SM
+  timer_update::Float64
 end
 
 for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T,Cint}), :BlasFloat),
@@ -7,7 +8,7 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T,Cint}), :BlasFloat)
   @eval begin
     function KP.kp_ic0(A::$SparseMatrixType) where T <: $BlasType
       P = rocSPARSE.ic0(A, 'O')
-      return AMD_IC0(P)
+      return AMD_IC0(P,0.0)
     end
   end
 end
@@ -21,8 +22,10 @@ for ArrayType in (:(ROCVector{T}), :(ROCMatrix{T}))
     end
 
     function ldiv!(y::$ArrayType, ic::AMD_IC0{ROCSparseMatrixCSR{T,Cint}}, x::$ArrayType) where T <: BlasFloat
+      ic.timer_update += @elapsed begin
       copyto!(y, x)
       ldiv!(ic, y)
+      end
       return y
     end
 
@@ -33,9 +36,15 @@ for ArrayType in (:(ROCVector{T}), :(ROCMatrix{T}))
     end
 
     function ldiv!(y::$ArrayType, ic::AMD_IC0{ROCSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
+      ic.timer_update += @elapsed begin
       copyto!(y, x)
       ldiv!(ic, y)
+      end
       return y
     end
   end
+end
+
+function KP.update(p::AMD_ICU0, A, device::CUDABackend)
+    p.P = CUSPARSE.ic02(A, 'O')
 end

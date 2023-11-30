@@ -42,6 +42,6 @@ Update the preconditioner `p` from the sparse Jacobian `J` in CSR format for ROC
 3) Extract the preconditioner matrix `p.P` from the dense blocks `cuJs`
 
 """
-function KP.update(p, J::rocSPARSE.ROCSparseMatrixCSR, device::ROCBackend)
+function KP.update(p::BlockJacobiPreconditioner, J::rocSPARSE.ROCSparseMatrixCSR, device::ROCBackend)
     _update_gpu(p, J.rowPtr, J.colVal, J.nzVal, device)
 end
