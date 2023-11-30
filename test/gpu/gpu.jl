@@ -18,7 +18,7 @@ function test_ic0(FC, V, M)
   x_gpu, stats = cg(A_gpu, b_gpu, M=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
-  if (FC <: ComplexF64) && V.name.name == :ROCArray
+  if (FC <: ComplexF64) && V.body.name.name == :ROCArray
     @test_broken norm(r_gpu) ≤ 1e-6
   else
     @test norm(r_gpu) ≤ 1e-8
