@@ -27,8 +27,8 @@ for ArrayType in (:(ROCVector{T}), :(ROCMatrix{T}))
     end
 
     function ldiv!(ilu::AMD_ILU0{ROCSparseMatrixCSC{T,Cint}}, x::$ArrayType) where T <: BlasReal
-      ldiv!(LowerTriangular(ilu.P), y)      # Forward substitution with L
-      ldiv!(UnitUpperTriangular(ilu.P), y)  # Backward substitution with U
+      ldiv!(LowerTriangular(ilu.P), x)      # Forward substitution with L
+      ldiv!(UnitUpperTriangular(ilu.P), x)  # Backward substitution with U
       return x
     end
 
