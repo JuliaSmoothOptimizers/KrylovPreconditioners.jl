@@ -1,18 +1,75 @@
-mutable struct AMD_IC0{SM}
-  P::SM
-  timer_update::Float64
+mutable struct MatInfo
+    info::rocSPARSE.rocsparse_mat_info
+
+    function MatInfo()
+        info_ref = Ref{rocsparse_mat_info}()
+        rocSPARSE.rocsparse_create_mat_info(info_ref)
+        obj = new(info_ref[])
+        finalizer(rocSPARSE.rocsparse_destroy_mat_info, obj)
+        obj
+    end
 end
 
-for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T,Cint}), :BlasFloat),
-                                     (:(ROCSparseMatrixCSC{T,Cint}), :BlasReal))
+unsafe_convert(::Type{rocSPARSE.rocsparse_mat_info}, info::MatInfo) = info.info
+
+mutable struct AMD_IC0{SM} <: AbstractKrylovPreconditioner
+  n::Int
+  desc::rocSPARSE.ROCMatrixDescriptor
+  buffer::ROCVector{UInt8}
+  info::MatInfo
+  timer_update::Float64
+  P::SM
+end
+
+for (bname, aname, sname, elty) in ((:rocsparse_scsric0_buffer_size, :rocsparse_scsric0_analysis, :rocsparse_scsric0, :Float32),
+                                    (:rocsparse_dcsric0_buffer_size, :rocsparse_dcsric0_analysis, :rocsparse_dcsric0, :Float64),
+                                    (:rocsparse_ccsric0_buffer_size, :rocsparse_ccsric0_analysis, :rocsparse_ccsric0, :ComplexF32),
+                                    (:rocsparse_zcsric0_buffer_size, :rocsparse_zcsric0_analysis, :rocsparse_zcsric0, :ComplexF64))
   @eval begin
-    function KP.kp_ic0(A::$SparseMatrixType) where T <: $BlasType
-      P = rocSPARSE.ic0(A, 'O')
-      return AMD_IC0(P, 0.0)
+    function KP.kp_ic0(A::ROCSparseMatrixCSR{$T,Cint})
+      P = copy(A)
+      n = checksquare(P)
+      desc = rocSPARSE.ROCMatrixDescriptor('G', 'L', 'N', 'O')
+      info = MatInfo()
+      buffer_size = Ref{Csize_t}()
+      rocSPARSE.$bname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info, buffer_size)
+      buffer = ROCVector{UInt8}(undef, buffer_size[])
+      rocSPARSE.$aname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info,
+                       rocSPARSE.rocsparse_analysis_policy_force, rocSPARSE.rocsparse_solve_policy_auto, buffer)
+      posit = Ref{Cint}(1)
+      rocSPARSE.rocsparse_csric0_zero_pivot(rocSPARSE.handle(), info, posit)
+      (posit[] ≥ 0) && error("Structural/numerical zero in A at ($(posit[]),$(posit[])))")
+      rocSPARSE.$sname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info, rocSPARSE.rocsparse_solve_policy_auto, buffer)
+      return AMD_IC0(n, desc, buffer, info, 0.0, P)
     end
 
-    function KP.update!(p::AMD_IC0{$SparseMatrixType}, A::$SparseMatrixType) where T <: $BlasType
-      p.P = rocSPARSE.ic0(A, 'O')
+    function KP.update!(p::AMD_IC0{ROCSparseMatrixCSR{$T,Cint}}, A::ROCSparseMatrixCSR{$T,Cint})
+      copyto!(p.P.nzVal, A.nzVal)
+      rocSPARSE.$sname(rocSPARSE.handle(), p.n, nnz(p.P), p.desc, p.P.nzVal, p.P.rowPtr, p.P.colVal, p.info, rocSPARSE.rocsparse_solve_policy_auto, p.buffer)
+      return p
+    end
+
+    function KP.kp_ic0(A::ROCSparseMatrixCSC{$T,Cint})
+      P = copy(A)
+      n = checksquare(P)
+      desc = rocSPARSE.ROCMatrixDescriptor('G', 'L', 'N', 'O')
+      info = MatInfo()
+      buffer_size = Ref{Csize_t}()
+      rocSPARSE.$bname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info, buffer_size)
+      buffer = ROCVector{UInt8}(undef, buffer_size[])
+      rocSPARSE.$aname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info,
+                       rocSPARSE.rocsparse_analysis_policy_force, rocSPARSE.rocsparse_solve_policy_auto, buffer)
+      posit = Ref{Cint}(1)
+      rocSPARSE.rocsparse_csric0_zero_pivot(rocSPARSE.handle(), info, posit)
+      (posit[] ≥ 0) && error("Structural/numerical zero in A at ($(posit[]),$(posit[])))")
+      rocSPARSE.$sname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info, rocSPARSE.rocsparse_solve_policy_auto, buffer)
+      return AMD_IC0(n, desc, buffer, info, 0.0, P)
+    end
+
+    function KP.update!(p::AMD_IC0{ROCSparseMatrixCSC{$T,Cint}}, A::ROCSparseMatrixCSC{$T,Cint})
+      copyto!(p.P.nzVal, A.nzVal)
+      rocSPARSE.$sname(rocSPARSE.handle(), p.n, nnz(p.P), p.desc, p.P.nzVal, p.P.colPtr, p.P.rowVal, p.info, rocSPARSE.rocsparse_solve_policy_auto, p.buffer)
+      return p
     end
   end
 end
