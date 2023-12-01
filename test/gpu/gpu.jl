@@ -98,7 +98,7 @@ function test_operator(FC, V, DM, SM)
     y_gpu = V(y_cpu)
     x_gpu = V(x_cpu)
     A_gpu2 = SM(A_cpu2)
-    update_operator!(opA_gpu, A_gpu2)
+    update!(opA_gpu, A_gpu2)
     mul!(y_gpu, opA_gpu, x_gpu)
     @test collect(y_gpu) ≈ y_cpu
   end
@@ -122,7 +122,7 @@ function test_operator(FC, V, DM, SM)
     Y_gpu = DM(Y_cpu)
     X_gpu = DM(X_cpu)
     A_gpu2 = SM(A_cpu2)
-    update_operator!(opA_gpu, A_gpu2)
+    update!(opA_gpu, A_gpu2)
     mul!(Y_gpu, opA_gpu, X_gpu)
     @test collect(Y_gpu) ≈ Y_cpu
   end

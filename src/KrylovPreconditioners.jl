@@ -12,8 +12,13 @@ import LinearAlgebra: ldiv!
 abstract type AbstractKrylovPreconditioner end
 export AbstractKrylovPreconditioner
 
+abstract type AbstractKrylovOperator{T} end
+export AbstractKrylovOperator
+
 update!(p::AbstractKrylovPreconditioner, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
 update!(p::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(p)) is not implemented.")
+update!(p::AbstractKrylovOperator, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
+update!(p::AbstractKrylovOperator, A) = error("update!() for $(typeof(p)) is not implemented.")
 
 export update!, get_timer, reset_timer!
 
@@ -25,14 +30,8 @@ function reset_timer!(p::AbstractKrylovPreconditioner)
     p.timer_update = 0.0
 end
 
-abstract type AbstractKrylovOperator{T} end
-export AbstractKrylovOperator
-
 function KrylovOperator end
 export KrylovOperator
-
-function update_operator! end
-export update_operator!
 
 # Preconditioners
 include("ic0.jl")
