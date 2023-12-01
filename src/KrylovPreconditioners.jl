@@ -39,7 +39,8 @@ include("ilu0.jl")
 include("blockjacobi.jl")
 
 # Scaling
-# include(scaling.jl)
+include("scaling.jl")
+export scaling_csr!
 
 # Ordering
 # include(ordering.jl)

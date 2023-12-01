@@ -16,5 +16,6 @@ include("AMDGPU/ic0.jl")
 include("AMDGPU/ilu0.jl")
 include("AMDGPU/blockjacobi.jl")
 include("AMDGPU/operators.jl")
+include("AMDGPU/scaling.jl")
 
 end
