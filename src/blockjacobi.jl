@@ -320,7 +320,7 @@ Update the preconditioner `p` from the sparse Jacobian `J` in CSC format for the
 Note that this implements the same algorithm as for the GPU and becomes very slow on CPU with growing number of blocks.
 
 """
-function KP.update!(p::BlockJacobiPreconditioner, J::SparseMatrixCSC)
+function update!(p::BlockJacobiPreconditioner, J::SparseMatrixCSC)
     # TODO: Enabling threading leads to a crash here
     for b in 1:p.nblocks
         p.blocks[:,:,b] = p.id[:,:]
