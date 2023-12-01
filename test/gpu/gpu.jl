@@ -149,6 +149,9 @@ function test_block_jacobi(device, AT, SMT)
     x♯ = x♯ |> AT
     x = similar(b); r = similar(b)
     nblocks = 2
+    if _is_csr(A)
+      scaling_csr!(A, b, device)
+    end
     precond = BlockJacobiPreconditioner(A, nblocks, device)
     update!(precond, A)
 

@@ -1,6 +1,8 @@
 using AMDGPU, AMDGPU.rocSPARSE, AMDGPU.rocSOLVER
 
 _get_type(J::ROCSparseMatrixCSR) = ROCArray{Float64, 1, AMDGPU.Mem.HIPBuffer}
+_is_csr(J::ROCSparseMatrixCSR) = true
+_is_csc(J::ROCSparseMatrixCSR) = false
 include("gpu.jl")
 
 @testset "AMD -- AMDGPU.jl" begin
