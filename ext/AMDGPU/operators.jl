@@ -47,7 +47,7 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
             end
         end
 
-        function KP.update_operator!(A::AMD_KrylovOperator{T}, B::$SparseMatrixType) where T <: $BlasFloat
+        function KP.update!(A::AMD_KrylovOperator{T}, B::$SparseMatrixType) where T <: $BlasFloat
             descB = rocSPARSE.ROCSparseMatrixDescriptor(B, 'O')
             A.descA = descB
             return A
