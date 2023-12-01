@@ -313,14 +313,14 @@ Fill the dense blocks of the preconditioner from the sparse CSR matrix arrays
 end
 
 """
-    function update!(J::SparseMatrixCSC, p)
+    function update!(p, J::SparseMatrixCSC)
 
 Update the preconditioner `p` from the sparse Jacobian `J` in CSC format for the CPU
 
 Note that this implements the same algorithm as for the GPU and becomes very slow on CPU with growing number of blocks.
 
 """
-function update!(p, J::SparseMatrixCSC)
+function KP.update!(p::BlockJacobiPreconditioner, J::SparseMatrixCSC)
     # TODO: Enabling threading leads to a crash here
     for b in 1:p.nblocks
         p.blocks[:,:,b] = p.id[:,:]
