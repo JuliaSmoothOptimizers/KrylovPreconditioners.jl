@@ -2,7 +2,7 @@ mutable struct MatInfo
     info::rocSPARSE.rocsparse_mat_info
 
     function MatInfo()
-        info_ref = Ref{rocsparse_mat_info}()
+        info_ref = Ref{rocSPARSE.rocsparse_mat_info}()
         rocSPARSE.rocsparse_create_mat_info(info_ref)
         obj = new(info_ref[])
         finalizer(rocSPARSE.rocsparse_destroy_mat_info, obj)
@@ -21,7 +21,7 @@ mutable struct AMD_IC0{SM} <: AbstractKrylovPreconditioner
   P::SM
 end
 
-for (bname, aname, sname, elty) in ((:rocsparse_scsric0_buffer_size, :rocsparse_scsric0_analysis, :rocsparse_scsric0, :Float32),
+for (bname, aname, sname, T) in ((:rocsparse_scsric0_buffer_size, :rocsparse_scsric0_analysis, :rocsparse_scsric0, :Float32),
                                     (:rocsparse_dcsric0_buffer_size, :rocsparse_dcsric0_analysis, :rocsparse_dcsric0, :Float64),
                                     (:rocsparse_ccsric0_buffer_size, :rocsparse_ccsric0_analysis, :rocsparse_ccsric0, :ComplexF32),
                                     (:rocsparse_zcsric0_buffer_size, :rocsparse_zcsric0_analysis, :rocsparse_zcsric0, :ComplexF64))
