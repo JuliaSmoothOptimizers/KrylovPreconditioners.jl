@@ -128,6 +128,68 @@ function test_operator(FC, V, DM, SM)
   end
 end
 
+function test_triangular(FC, V, DM, SM)
+  n = 100
+  for uplo in ('L', 'U')
+    for diag in ('U', 'N')
+      A_cpu = rand(FC, n, n)
+      A_cpu = uplo == 'L' ? tril(A_cpu) : triu(A_cpu)
+      A_cpu = diag == 'U' ? A_cpu - Diagonal(A_cpu) + I : A_cpu
+      A_cpu = sparse(A_cpu)
+      b_cpu = rand(FC, n)
+
+      A_gpu = SM(A_cpu)
+      b_gpu = V(b_cpu)
+      opA_gpu = TriangularOperator(A_gpu)
+      for i = 1:5
+        y_cpu = rand(FC, n)
+        x_cpu = rand(FC, n)
+        ldiv!(y_cpu, A_cpu, x_cpu)
+        y_gpu = V(y_cpu)
+        x_gpu = V(x_cpu)
+        ldiv!(y_gpu, opA_gpu, x_gpu)
+        @test collect(y_gpu) ≈ y_cpu
+      end
+      for j = 1:5
+        y_cpu = rand(FC, n)
+        x_cpu = rand(FC, n)
+        A_cpu2 = A_cpu + j*I
+        ldiv!(y_cpu, A_cpu2, x_cpu)
+        y_gpu = V(y_cpu)
+        x_gpu = V(x_cpu)
+        A_gpu2 = SM(A_cpu2)
+        update!(opA_gpu, A_gpu2)
+        ldiv!(y_gpu, opA_gpu, x_gpu)
+        @test collect(y_gpu) ≈ y_cpu
+      end
+
+      nrhs = 3
+      opA_gpu = TriangularOperator(A_gpu; nrhs)
+      for i = 1:5
+        Y_cpu = rand(FC, n, nrhs)
+        X_cpu = rand(FC, n, nrhs)
+        ldiv!(Y_cpu, A_cpu, X_cpu)
+        Y_gpu = DM(Y_cpu)
+        X_gpu = DM(X_cpu)
+        ldiv!(Y_gpu, opA_gpu, X_gpu)
+        @test collect(Y_gpu) ≈ Y_cpu
+      end
+      for j = 1:5
+        Y_cpu = rand(FC, n, nrhs)
+        X_cpu = rand(FC, n, nrhs)
+        A_cpu2 = A_cpu + j*I
+        ldiv!(Y_cpu, A_cpu2, X_cpu)
+        Y_gpu = DM(Y_cpu)
+        X_gpu = DM(X_cpu)
+        A_gpu2 = SM(A_cpu2)
+        update!(opA_gpu, A_gpu2)
+        ldiv!(Y_gpu, opA_gpu, X_gpu)
+        @test collect(Y_gpu) ≈ Y_cpu
+      end
+    end
+  end
+end
+
 _get_type(J::SparseMatrixCSC) = Vector{Float64}
 
 function generate_random_system(n::Int, m::Int)

@@ -33,6 +33,9 @@ end
 function KrylovOperator end
 export KrylovOperator
 
+function TriangularOperator end
+export TriangularOperator
+
 # Preconditioners
 include("ic0.jl")
 include("ilu0.jl")
