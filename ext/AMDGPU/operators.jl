@@ -81,7 +81,7 @@ function LinearAlgebra.mul!(Y::ROCMatrix{T}, A::AMD_KrylovOperator{T}, X::ROCMat
                              beta, descY, T, algo, rocSPARSE.rocsparse_spmm_stage_compute, A.buffer_size, A.buffer)
 end
 
-mutable struct AMD_TriangularOperator{T} <: AbstractKrylovOperator{T}
+mutable struct AMD_TriangularOperator{T} <: AbstractTriangularOperator{T}
     type::Type{T}
     m::Int
     n::Int
@@ -98,7 +98,7 @@ size(A::AMD_TriangularOperator) = (A.m, A.n)
 for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
                                      (:(ROCSparseMatrixCOO{T}), :BlasFloat))
     @eval begin
-        function KP.TriangularOperator(A::$SparseMatrixType; nrhs::Int=1, transa::Char='N') where T <: $BlasType
+        function KP.TriangularOperator(A::$SparseMatrixType, uplo::Char, diag::Char; nrhs::Int=1, transa::Char='N') where T <: $BlasType
             m,n = size(A)
             alpha = Ref{T}(one(T))
             descA = rocSPARSE.ROCSparseMatrixDescriptor(A, 'O')

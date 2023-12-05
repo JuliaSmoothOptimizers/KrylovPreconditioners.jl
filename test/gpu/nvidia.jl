@@ -40,6 +40,15 @@ include("gpu.jl")
     end
   end
 
+  @testset "TriangularOperator" begin
+    @testset "CuSparseMatrixCOO -- $FC" for FC in (Float64, ComplexF64)
+      test_triangular(FC, CuVector{FC}, CuMatrix{FC}, CuSparseMatrixCOO{FC})
+    end
+    @testset "CuSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
+      test_triangular(FC, CuVector{FC}, CuMatrix{FC}, CuSparseMatrixCSR{FC})
+    end
+  end
+
   @testset "Block Jacobi preconditioner" begin
     test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSR)
   end

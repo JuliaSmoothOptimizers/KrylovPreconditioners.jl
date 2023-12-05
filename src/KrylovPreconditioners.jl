@@ -15,6 +15,9 @@ export AbstractKrylovPreconditioner
 abstract type AbstractKrylovOperator{T} end
 export AbstractKrylovOperator
 
+abstract type AbstractTriangularOperator{T} end
+export AbstractTriangularOperator
+
 update!(p::AbstractKrylovPreconditioner, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
 update!(p::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(p)) is not implemented.")
 update!(p::AbstractKrylovOperator, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
