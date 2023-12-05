@@ -71,7 +71,7 @@ function create_blocklist(blocks::Array, npart)
     return blocklist
 end
 
-function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0) where {}
+function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0)
     if npart < 2
         error("Number of partitions `npart` should be at" *
                 "least 2 for partitioning in Metis")

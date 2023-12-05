@@ -2,7 +2,7 @@ mutable struct AMD_ILU0{SM} <: AbstractKrylovPreconditioner
   n::Int
   desc::rocSPARSE.ROCMatrixDescriptor
   buffer::ROCVector{UInt8}
-  info::MatInfo
+  info::rocSPARSE.MatInfo
   timer_update::Float64
   P::SM
 end
@@ -16,7 +16,7 @@ for (bname, aname, sname, T) in ((:rocsparse_scsrilu0_buffer_size, :rocsparse_sc
       P = copy(A)
       n = checksquare(P)
       desc = rocSPARSE.ROCMatrixDescriptor('G', 'L', 'N', 'O')
-      info = MatInfo()
+      info = rocSPARSE.MatInfo()
       buffer_size = Ref{Csize_t}()
       rocSPARSE.$bname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info, buffer_size)
       buffer = ROCVector{UInt8}(undef, buffer_size[])
@@ -38,7 +38,7 @@ for (bname, aname, sname, T) in ((:rocsparse_scsrilu0_buffer_size, :rocsparse_sc
       P = copy(A)
       n = checksquare(P)
       desc = rocSPARSE.ROCMatrixDescriptor('G', 'L', 'N', 'O')
-      info = MatInfo()
+      info = rocSPARSE.MatInfo()
       buffer_size = Ref{Csize_t}()
       rocSPARSE.$bname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info, buffer_size)
       buffer = ROCVector{UInt8}(undef, buffer_size[])
