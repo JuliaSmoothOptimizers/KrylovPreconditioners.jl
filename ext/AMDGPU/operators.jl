@@ -102,6 +102,10 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
             m,n = size(A)
             alpha = Ref{T}(one(T))
             descA = rocSPARSE.ROCSparseMatrixDescriptor(A, 'O')
+            rocsparse_uplo = Ref{rocSPARSE.rocsparse_diag_type}(uplo)
+            rocsparse_diag = Ref{rocSPARSE.rocsparse_matrix_type}(diag)
+            rocSPARSE.rocsparse_spmat_set_attribute(descA, rocSPARSE.rocsparse_spmat_fill_mode, rocsparse_uplo, Csize_t(sizeof(rocsparse_uplo)))
+            rocSPARSE.rocsparse_spmat_set_attribute(descA, rocSPARSE.rocsparse_spmat_diag_type, rocsparse_diag, Csize_t(sizeof(rocsparse_diag)))
             if nrhs == 1
                 descX = rocSPARSE.ROCDenseVectorDescriptor(T, n)
                 descY = rocSPARSE.ROCDenseVectorDescriptor(T, m)
