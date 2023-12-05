@@ -40,6 +40,15 @@ include("gpu.jl")
     end
   end
 
+  @testset "TriangularOperator" begin
+    @testset "ROCSparseMatrixCOO -- $FC" for FC in (Float64, ComplexF64)
+      test_triangular(FC, ROCVector{FC}, ROCMatrix{FC}, ROCSparseMatrixCOO{FC})
+    end
+    @testset "ROCSparseMatrixCSR -- $FC" for FC in (Float64, ComplexF64)
+      test_triangular(FC, ROCVector{FC}, ROCMatrix{FC}, ROCSparseMatrixCSR{FC})
+    end
+  end
+
   @testset "Block Jacobi preconditioner" begin
     test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSR)
   end
