@@ -20,7 +20,7 @@ KrylovPreconditionersAMDGPUExt = "AMDGPU"
 KrylovPreconditionersCUDAExt = "CUDA"
 
 [compat]
-AMDGPU = "0.8"
+AMDGPU = "0.8.2"
 Adapt = "3"
 CUDA = "5.1.1"
 Metis = "1"

@@ -1,36 +1,22 @@
-mutable struct MatInfo
-    info::rocSPARSE.rocsparse_mat_info
-
-    function MatInfo()
-        info_ref = Ref{rocSPARSE.rocsparse_mat_info}()
-        rocSPARSE.rocsparse_create_mat_info(info_ref)
-        obj = new(info_ref[])
-        finalizer(rocSPARSE.rocsparse_destroy_mat_info, obj)
-        obj
-    end
-end
-
-unsafe_convert(::Type{rocSPARSE.rocsparse_mat_info}, info::MatInfo) = info.info
-
 mutable struct AMD_IC0{SM} <: AbstractKrylovPreconditioner
   n::Int
   desc::rocSPARSE.ROCMatrixDescriptor
   buffer::ROCVector{UInt8}
-  info::MatInfo
+  info::rocSPARSE.MatInfo
   timer_update::Float64
   P::SM
 end
 
 for (bname, aname, sname, T) in ((:rocsparse_scsric0_buffer_size, :rocsparse_scsric0_analysis, :rocsparse_scsric0, :Float32),
-                                    (:rocsparse_dcsric0_buffer_size, :rocsparse_dcsric0_analysis, :rocsparse_dcsric0, :Float64),
-                                    (:rocsparse_ccsric0_buffer_size, :rocsparse_ccsric0_analysis, :rocsparse_ccsric0, :ComplexF32),
-                                    (:rocsparse_zcsric0_buffer_size, :rocsparse_zcsric0_analysis, :rocsparse_zcsric0, :ComplexF64))
+                                 (:rocsparse_dcsric0_buffer_size, :rocsparse_dcsric0_analysis, :rocsparse_dcsric0, :Float64),
+                                 (:rocsparse_ccsric0_buffer_size, :rocsparse_ccsric0_analysis, :rocsparse_ccsric0, :ComplexF32),
+                                 (:rocsparse_zcsric0_buffer_size, :rocsparse_zcsric0_analysis, :rocsparse_zcsric0, :ComplexF64))
   @eval begin
     function KP.kp_ic0(A::ROCSparseMatrixCSR{$T,Cint})
       P = copy(A)
       n = checksquare(P)
       desc = rocSPARSE.ROCMatrixDescriptor('G', 'L', 'N', 'O')
-      info = MatInfo()
+      info = rocSPARSE.MatInfo()
       buffer_size = Ref{Csize_t}()
       rocSPARSE.$bname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.rowPtr, P.colVal, info, buffer_size)
       buffer = ROCVector{UInt8}(undef, buffer_size[])
@@ -53,7 +39,7 @@ for (bname, aname, sname, T) in ((:rocsparse_scsric0_buffer_size, :rocsparse_scs
       P = copy(A)
       n = checksquare(P)
       desc = rocSPARSE.ROCMatrixDescriptor('G', 'L', 'N', 'O')
-      info = MatInfo()
+      info = rocSPARSE.MatInfo()
       buffer_size = Ref{Csize_t}()
       rocSPARSE.$bname(rocSPARSE.handle(), n, nnz(P), desc, P.nzVal, P.colPtr, P.rowVal, info, buffer_size)
       buffer = ROCVector{UInt8}(undef, buffer_size[])
