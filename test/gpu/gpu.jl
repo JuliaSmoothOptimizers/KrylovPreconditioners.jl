@@ -152,19 +152,17 @@ function test_triangular(FC, V, DM, SM)
       ldiv!(y_gpu, opA_gpu, x_gpu)
       @test collect(y_gpu) ≈ y_cpu
     end
-    if diag == 'N'
-      for j = 1:5
-        y_cpu = rand(FC, n)
-        x_cpu = rand(FC, n)
-        A_cpu2 = A_cpu + j*I
-        ldiv!(y_cpu, triangle(A_cpu2), x_cpu)
-        y_gpu = V(y_cpu)
-        x_gpu = V(x_cpu)
-        A_gpu2 = SM(A_cpu2)
-        update!(opA_gpu, A_gpu2)
-        ldiv!(y_gpu, opA_gpu, x_gpu)
-        @test collect(y_gpu) ≈ y_cpu
-      end
+    for j = 1:5
+      y_cpu = rand(FC, n)
+      x_cpu = rand(FC, n)
+      A_cpu2 = A_cpu + j*tril(A_cpu,-1) + j*triu(A_cpu,1)
+      ldiv!(y_cpu, triangle(A_cpu2), x_cpu)
+      y_gpu = V(y_cpu)
+      x_gpu = V(x_cpu)
+      A_gpu2 = SM(A_cpu2)
+      update!(opA_gpu, A_gpu2)
+      ldiv!(y_gpu, opA_gpu, x_gpu)
+      @test collect(y_gpu) ≈ y_cpu
     end
 
     nrhs = 3
@@ -178,11 +176,11 @@ function test_triangular(FC, V, DM, SM)
       ldiv!(Y_gpu, opA_gpu, X_gpu)
       @test collect(Y_gpu) ≈ Y_cpu
     end
-    if diag == 'N' && V.body.name.name != :CuArray
+    if V.body.name.name != :CuArray
       for j = 1:5
         Y_cpu = rand(FC, n, nrhs)
         X_cpu = rand(FC, n, nrhs)
-        A_cpu2 = A_cpu + j*I
+        A_cpu2 = A_cpu + j*tril(A_cpu,-1) + j*triu(A_cpu,1)
         ldiv!(Y_cpu, triangle(A_cpu2), X_cpu)
         Y_gpu = DM(Y_cpu)
         X_gpu = DM(X_cpu)
