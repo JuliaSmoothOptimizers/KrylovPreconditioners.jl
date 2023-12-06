@@ -102,8 +102,8 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
             m,n = size(A)
             alpha = Ref{T}(one(T))
             descA = rocSPARSE.ROCSparseMatrixDescriptor(A, 'O')
-            rocsparse_uplo = Ref{rocSPARSE.rocsparse_diag_type}(uplo)
-            rocsparse_diag = Ref{rocSPARSE.rocsparse_matrix_type}(diag)
+            rocsparse_uplo = Ref{rocSPARSE.rocsparse_fill_mode}(uplo)
+            rocsparse_diag = Ref{rocSPARSE.rocsparse_diag_type}(diag)
             rocSPARSE.rocsparse_spmat_set_attribute(descA, rocSPARSE.rocsparse_spmat_fill_mode, rocsparse_uplo, Csize_t(sizeof(rocsparse_uplo)))
             rocSPARSE.rocsparse_spmat_set_attribute(descA, rocSPARSE.rocsparse_spmat_diag_type, rocsparse_diag, Csize_t(sizeof(rocsparse_diag)))
             if nrhs == 1
@@ -122,10 +122,10 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
                 descY = rocSPARSE.ROCDenseMatrixDescriptor(T, m, nrhs)
                 algo = rocSPARSE.rocsparse_spsm_alg_default
                 buffer_size = Ref{Csize_t}()
-                rocSPARSE.rocsparse_spsm(rocSPARSE.handle(), transa, alpha, descA, descX, descY, T, algo,
+                rocSPARSE.rocsparse_spsm(rocSPARSE.handle(), transa, 'N', alpha, descA, descX, descY, T, algo,
                                          rocSPARSE.rocsparse_spsm_stage_buffer_size, buffer_size, C_NULL)
                 buffer = ROCVector{UInt8}(undef, buffer_size[])
-                rocSPARSE.rocsparse_spsm(rocSPARSE.handle(), transa, alpha, descA, descX, descY, T, algo,
+                rocSPARSE.rocsparse_spsm(rocSPARSE.handle(), transa, 'N', alpha, descA, descX, descY, T, algo,
                                          rocSPARSE.rocsparse_spsm_stage_preprocess, buffer_size, buffer)
                 return AMD_TriangularOperator{T}(T, m, n, nrhs, transa, descA, buffer_size, buffer)
             end
@@ -161,6 +161,6 @@ function LinearAlgebra.ldiv!(Y::ROCMatrix{T}, A::AMD_TriangularOperator{T}, X::R
     descX = rocSPARSE.ROCDenseMatrixDescriptor(X)
     algo = rocSPARSE.rocsparse_spsm_alg_default
     alpha = Ref{T}(one(T))
-    rocSPARSE.rocsparse_spsm(rocSPARSE.handle(), A.transa, alpha, A.descA, descX, descY, T,
+    rocSPARSE.rocsparse_spsm(rocSPARSE.handle(), A.transa, 'N', alpha, A.descA, descX, descY, T,
                              algo, rocSPARSE.rocsparse_spsm_stage_compute, A.buffer_size, A.buffer)
 end
