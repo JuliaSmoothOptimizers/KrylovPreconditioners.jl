@@ -132,8 +132,8 @@ for (SparseMatrixType, BlasType) in ((:(ROCSparseMatrixCSR{T}), :BlasFloat),
         end
 
         function KP.update!(A::AMD_TriangularOperator{T}, B::$SparseMatrixType) where T <: $BlasFloat
-            descB = rocSPARSE.ROCSparseMatrixDescriptor(B, 'O')
-            A.descA = descB
+            (B isa ROCSparseMatrixCOO) && rocSPARSE.rocsparse_coo_set_pointers(A.descA, B.rowInd, B.colInd, B.nzVal)
+            (B isa ROCSparseMatrixCSR) && rocSPARSE.rocsparse_csr_set_pointers(A.descA, B.rowPtr, B.colVal, B.nzVal)
             return A
         end
     end
