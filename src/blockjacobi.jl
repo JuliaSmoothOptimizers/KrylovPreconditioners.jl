@@ -161,9 +161,9 @@ Base.eltype(::BlockJacobiPreconditioner) = Float64
 # of the blocks, gemm_strided is performing too many unecessary operations,
 # impairing its performance.
 @kernel function mblock_b_kernel!(y, b, p_len, rp_len, part, blocks)
-    i, j = @index(Global, NTuple)
-    len = p_len[i]
-    rlen = rp_len[i]
+    j, i = @index(Global, NTuple)
+    @inbounds len = p_len[i]
+    @inbounds rlen = rp_len[i]
 
     if j <= rlen
         accum = 0.0
@@ -230,7 +230,7 @@ function LinearAlgebra.mul!(y, C::BlockJacobiPreconditioner, b::AbstractVector{T
     n = size(b, 1)
     fill!(y, zero(T))
     max_rlen = maximum(C.rest_size)
-    ndrange = (C.nblocks, max_rlen)
+    ndrange = (max_rlen, C.nblocks)
     C.timer_update += @elapsed begin mblock_b_kernel!(device)(
         y, b, C.culpartitions, C.curest_size,
         C.cupartitions, C.cublocks,
