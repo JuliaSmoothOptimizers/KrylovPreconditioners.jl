@@ -288,14 +288,14 @@ Fill the dense blocks of the preconditioner from the sparse CSR matrix arrays
 
 """
 @kernel function _fillblock_gpu!(blocks, blocksize, partition, map, rowPtr, colVal, nzVal, part, lpartitions, id)
-    b = @index(Global, Linear)
+    b,k = @index(Global, NTuple)
     for i in 1:blocksize
-        for j in 1:blocksize
-            blocks[i,j,b] = id[i,j]
-        end
+        blocks[k,i,b] = id[k,i]
     end
 
-    @inbounds for k in 1:lpartitions[b]
+    @synchronize
+
+    @inbounds if k <= lpartitions[b]
         # select row
         i = partition[k, b]
         # iterate matrix

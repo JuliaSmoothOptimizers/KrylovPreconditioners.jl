@@ -10,6 +10,7 @@ end
 
 function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::ROCBackend)
     nblocks = p.nblocks
+    blocksize = p.blocksize
     fillblock_gpu_kernel! = KP._fillblock_gpu!(device)
     # Fill Block Jacobi" begin
     fillblock_gpu_kernel!(
@@ -17,7 +18,7 @@ function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::ROCBackend)
         p.cupartitions, p.cumap,
         j_rowptr, j_colval, j_nzval,
         p.cupart, p.culpartitions, p.id,
-        ndrange=nblocks,
+        ndrange=(nblocks, blocksize),
     )
     KA.synchronize(device)
     # Invert blocks begin
