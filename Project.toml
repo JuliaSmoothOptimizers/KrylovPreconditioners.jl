@@ -1,7 +1,7 @@
 name = "KrylovPreconditioners"
 uuid = "45d422c2-293f-44ce-8315-2cb988662dec"
 authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
