@@ -10,7 +10,8 @@ steps:
       julia --color=yes --project=test/gpu -e '
         using Pkg
         Pkg.develop(path=".")
-        Pkg.add("CUDA")
+        # Pkg.add("CUDA")
+        Pkg.add(url="https://github.com/JuliaGPU/CUDA.jl", rev="master")
         Pkg.add("Krylov")
         Pkg.instantiate()
         include("test/gpu/nvidia.jl")'

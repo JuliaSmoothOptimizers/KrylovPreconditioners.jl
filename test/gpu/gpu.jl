@@ -176,19 +176,17 @@ function test_triangular(FC, V, DM, SM)
       ldiv!(Y_gpu, opA_gpu, X_gpu)
       @test collect(Y_gpu) ≈ Y_cpu
     end
-    if V.body.name.name != :CuArray
-      for j = 1:5
-        Y_cpu = rand(FC, n, nrhs)
-        X_cpu = rand(FC, n, nrhs)
-        A_cpu2 = A_cpu + j*tril(A_cpu,-1) + j*triu(A_cpu,1)
-        ldiv!(Y_cpu, triangle(A_cpu2), X_cpu)
-        Y_gpu = DM(Y_cpu)
-        X_gpu = DM(X_cpu)
-        A_gpu2 = SM(A_cpu2)
-        update!(opA_gpu, A_gpu2)
-        ldiv!(Y_gpu, opA_gpu, X_gpu)
-        @test collect(Y_gpu) ≈ Y_cpu
-      end
+    for j = 1:5
+      Y_cpu = rand(FC, n, nrhs)
+      X_cpu = rand(FC, n, nrhs)
+      A_cpu2 = A_cpu + j*tril(A_cpu,-1) + j*triu(A_cpu,1)
+      ldiv!(Y_cpu, triangle(A_cpu2), X_cpu)
+      Y_gpu = DM(Y_cpu)
+      X_gpu = DM(X_cpu)
+      A_gpu2 = SM(A_cpu2)
+      update!(opA_gpu, A_gpu2)
+      ldiv!(Y_gpu, opA_gpu, X_gpu)
+      @test collect(Y_gpu) ≈ Y_cpu
     end
   end
 end

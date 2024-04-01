@@ -27,6 +27,9 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                 buffer_size = Ref{Csize_t}()
                 CUSPARSE.cusparseSpMV_bufferSize(CUSPARSE.handle(), transa, alpha, descA, descX, beta, descY, T, algo, buffer_size)
                 buffer = CuVector{UInt8}(undef, buffer_size[])
+                if CUSPARSE.version() ≥ v"12.3"
+                    CUSPARSE.cusparseSpMV_preprocess(CUSPARSE.handle(), transa, alpha, descA, descX, beta, descY, T, algo, buffer)
+                end
                 return NVIDIA_KrylovOperator{T}(T, m, n, nrhs, transa, descA, buffer)
             else
                 descX = CUSPARSE.CuDenseMatrixDescriptor(T, n, nrhs)
@@ -125,7 +128,7 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
         end
 
         function KP.update!(A::NVIDIA_TriangularOperator{T,CUSPARSE.CuSparseSpSVDescriptor}, B::$SparseMatrixType) where T <: $BlasFloat
-            CUSPARSE.version() ≥ v"12.2" || error("This operation is only support by CUDA ≥ v12.3")
+            CUSPARSE.version() ≥ v"12.2" || error("This operation is only supported by CUDA ≥ v12.3")
             descB = CUSPARSE.CuSparseMatrixDescriptor(B, 'O')
             A.descA = descB
             CUSPARSE.cusparseSpSV_updateMatrix(CUSPARSE.handle(), A.descT, B.nzVal, 'G')
@@ -133,7 +136,11 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
         end
 
         function KP.update!(A::NVIDIA_TriangularOperator{T,CUSPARSE.CuSparseSpSMDescriptor}, B::$SparseMatrixType) where T <: $BlasFloat
-            return error("This operation will be supported in CUDA v12.4")
+            CUSPARSE.version() ≥ v"12.3" || error("This operation is only supported by CUDA ≥ v12.4")
+            descB = CUSPARSE.CuSparseMatrixDescriptor(B, 'O')
+            A.descA = descB
+            CUSPARSE.cusparseSpSM_updateMatrix(CUSPARSE.handle(), A.descT, B.nzVal, 'G')
+            return A
         end
     end
 end
