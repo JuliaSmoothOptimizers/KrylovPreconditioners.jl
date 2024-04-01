@@ -52,7 +52,8 @@ steps:
       julia --color=yes --project=test/gpu -e '
         using Pkg
         Pkg.develop(path=".")
-        Pkg.add("oneAPI")
+        # Pkg.add("oneAPI")
+        Pkg.add(url="https://github.com/JuliaGPU/oneAPI.jl", rev="master")
         Pkg.add("Krylov")
         Pkg.instantiate()
         include("test/gpu/intel.jl")'

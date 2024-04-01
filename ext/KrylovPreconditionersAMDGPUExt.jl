@@ -2,7 +2,7 @@ module KrylovPreconditionersAMDGPUExt
 using LinearAlgebra
 using SparseArrays
 using AMDGPU
-using AMDGPU.rocSPARSE
+using AMDGPU.rocSPARSE, AMDGPU.rocSOLVER
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!, mul!
 import Base: size, eltype, unsafe_convert
