@@ -3,7 +3,7 @@ KP.BlockJacobiPreconditioner(J::oneMKL.oneSparseMatrixCSR; options...) = BlockJa
 function KP.create_blocklist(cublocks::oneArray, npart)
     blocklist = Array{oneMatrix{Float64}}(undef, npart)
     for b in 1:npart
-        blocklist[b] = oneMatrix{Float64}(undef, size(cublocks)...)
+        blocklist[b] = oneMatrix{Float64}(undef, size(cublocks,1), size(cublocks,2))
     end
     return blocklist
 end

@@ -3,7 +3,7 @@ KP.BlockJacobiPreconditioner(J::rocSPARSE.ROCSparseMatrixCSR; options...) = Bloc
 function KP.create_blocklist(cublocks::ROCArray, npart)
     blocklist = Array{ROCMatrix{Float64}}(undef, npart)
     for b in 1:npart
-        blocklist[b] = ROCMatrix{Float64}(undef, size(cublocks)...)
+        blocklist[b] = ROCMatrix{Float64}(undef, size(cublocks,1), size(cublocks,2))
     end
     return blocklist
 end

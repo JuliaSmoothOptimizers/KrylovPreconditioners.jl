@@ -3,7 +3,7 @@ KP.BlockJacobiPreconditioner(J::CUSPARSE.CuSparseMatrixCSR; options...) = BlockJ
 function KP.create_blocklist(cublocks::CuArray, npart)
     blocklist = Array{CuMatrix{Float64}}(undef, npart)
     for b in 1:npart
-        blocklist[b] = CuMatrix{Float64}(undef, size(cublocks)...)
+        blocklist[b] = CuMatrix{Float64}(undef, size(cublocks,1), size(cublocks,2))
     end
     return blocklist
 end
