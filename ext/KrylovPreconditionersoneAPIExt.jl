@@ -12,6 +12,6 @@ const KP = KrylovPreconditioners
 using KernelAbstractions
 const KA = KernelAbstractions
 
-include("CUDA/blockjacobi.jl")
+include("oneAPI/blockjacobi.jl")
 
 end
