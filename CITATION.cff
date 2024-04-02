@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Kenens"
+    given-names: "Antonin"
+title: "KrylovPreconditioners.jl : The ultimate collection of preconditioners "
+date-released: '2023-11-20'
+version: 0.2.2
+license: MPL-2.0
+repository-code: "https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl"
+keywords:
+  - Least squares
+  - Julia
+  - preconditioners

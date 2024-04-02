@@ -1,4 +1,4 @@
-# KrylovPreconditioners.jl
+# `KrylovPreconditioners`.jl
 
 | **Documentation** | **CI** | **Coverage** | **Downloads** |
 |:-----------------:|:------:|:------------:|:-------------:|
@@ -16,5 +16,9 @@
 [codecov-url]: https://app.codecov.io/gh/JuliaSmoothOptimizers/KrylovPreconditioners.jl
 [downloads-img]: https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/KrylovPreconditioners
 [downloads-url]: https://pkgs.genieframework.com?packages=KrylovPreconditioners
+
+## How to Cite
+
+If you use KrylovPreconditioners.jl in your work, please cite using the format given in [`CITATION.cff`](https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl/blob/main/CITATION.cff).
 
 The best sidekick of [Krylov.jl](https://github.com/JuliaSmoothOptimizers/Krylov.jl) └(^o^ )Ｘ( ^o^)┘

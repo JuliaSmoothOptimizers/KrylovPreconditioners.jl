@@ -1,7 +1,9 @@
 # [KrylovPreconditioners.jl documentation](@id Home)
 
 This package provides a collection of preconditioners.
+## How to Cite
 
+If you use KrylovPreconditioners.jl in your work, please cite using the format given in [`CITATION.cff`](https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl/blob/main/CITATION.cff).
 ## How to Install
 
 KrylovPreconditioners.jl can be installed and tested through the Julia package manager:
