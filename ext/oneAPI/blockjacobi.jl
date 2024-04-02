@@ -25,7 +25,7 @@ function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::oneAPIBackend)
     for b in 1:nblocks
         p.blocklist[b] .= p.cublocks[:,:,b]
     end
-    oneAPI.@sync pivot = oneMKL.getrf_batched!(p.blocklist)
+    oneAPI.@sync pivot, p.blocklist = oneMKL.getrf_batched!(p.blocklist)
     oneAPI.@sync pivot, p.blocklist = oneMKL.getri_batched!(p.blocklist, pivot)
     for b in 1:nblocks
         p.cublocks[:,:,b] .= p.blocklist[b]

@@ -1,6 +1,6 @@
 using AMDGPU
 using CUDA
-# using oneAPI
+using oneAPI
 using Test
 
 @testset "KrylovPreconditioners" begin
@@ -18,10 +18,10 @@ if CUDA.functional()
     end
 end
 
-# if oneAPI.functional()
-#     @info "Testing oneAPI backend"
-#     @testset "Testing oneAPI backend" begin
-#         include("gpu/intel.jl")
-#     end
-# end
+if oneAPI.functional()
+    @info "Testing oneAPI backend"
+    @testset "Testing oneAPI backend" begin
+        include("gpu/intel.jl")
+    end
+end
 end
