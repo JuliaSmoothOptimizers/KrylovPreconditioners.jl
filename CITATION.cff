@@ -2,10 +2,14 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 authors:
-  - family-names: "Kenens"
-    given-names: "Antonin"
+  - given-names: Alexis
+    family-names: Montoison
+    orcid: "https://orcid.org/0000-0002-3403-5450"
+    affiliation: "GERAD and Department of Mathematics and Industrial Engineering, Polytechnique Montréal, QC, Canada."
+  - given-names: Michel 
+    family-names: Schanen
 title: "KrylovPreconditioners.jl : The ultimate collection of preconditioners "
-date-released: '2023-11-20'
+date-released: '2024-03-01'
 version: 0.2.2
 license: MPL-2.0
 repository-code: "https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl"
