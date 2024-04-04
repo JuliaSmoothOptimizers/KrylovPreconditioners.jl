@@ -10,6 +10,6 @@ version: 0.2.2
 license: MPL-2.0
 repository-code: "https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl"
 keywords:
-  - Least squares
+  - Krylov
   - Julia
   - preconditioners
