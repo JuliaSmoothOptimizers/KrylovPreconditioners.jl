@@ -2,6 +2,7 @@ module KrylovPreconditionersoneAPIExt
 using LinearAlgebra
 using SparseArrays
 using oneAPI
+using oneAPI: global_queue, sycl_queue, context, device
 using oneAPI.oneMKL
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!, mul!
@@ -13,5 +14,6 @@ using KernelAbstractions
 const KA = KernelAbstractions
 
 include("oneAPI/blockjacobi.jl")
+include("oneAPI/operators.jl")
 
 end
