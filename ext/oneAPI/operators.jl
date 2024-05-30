@@ -17,7 +17,7 @@ for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T}), :BlasFloat),)
             if nrhs == 1
                 oneMKL.sparse_optimize_gemv!(transa, A)
             end
-            # sparse_optimize_gemm! is only available with oneAPI 2024.1.0
+            # sparse_optimize_gemm! is only available with oneAPI > v2024.1.0
             return INTEL_KrylovOperator{T}(T, m, n, nrhs, transa, A)
         end
 
@@ -67,8 +67,9 @@ for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T}), :BlasFloat),)
             m,n = size(A)
             if nrhs == 1
                 oneMKL.sparse_optimize_trsv!(uplo, transa, diag, A)
+            else
+                oneMKL.sparse_optimize_trsm!(uplo, transa, diag, nrhs, A)
             end
-            # sparse_optimize_trsm! is only available with oneAPI 2024.1.0
             return INTEL_TriangularOperator{T}(T, m, n, nrhs, uplo, diag, transa, A)
         end
 
@@ -82,7 +83,7 @@ function LinearAlgebra.ldiv!(y::oneVector{T}, A::INTEL_TriangularOperator{T}, x:
     (length(y) != A.m) && throw(DimensionMismatch("length(y) != A.m"))
     (length(x) != A.n) && throw(DimensionMismatch("length(x) != A.n"))
     (A.nrhs == 1) || throw(DimensionMismatch("A.nrhs != 1"))
-    oneMKL.sparse_trsv!(A.uplo, A.transa, A.diag, A.matrix, x, y)
+    oneMKL.sparse_trsv!(A.uplo, A.transa, A.diag, one(T), A.matrix, x, y)
 end
 
 function LinearAlgebra.ldiv!(Y::oneMatrix{T}, A::INTEL_TriangularOperator{T}, X::oneMatrix{T}) where T <: BlasFloat
@@ -91,5 +92,5 @@ function LinearAlgebra.ldiv!(Y::oneMatrix{T}, A::INTEL_TriangularOperator{T}, X:
     (mY != A.m) && throw(DimensionMismatch("mY != A.m"))
     (mX != A.n) && throw(DimensionMismatch("mX != A.n"))
     (nY == nX == A.nrhs) || throw(DimensionMismatch("nY != A.nrhs or nX != A.nrhs"))
-    error("The routine sparse_trsm! is only available with oneAPI 2024.1.0")
+    oneMKL.sparse_trsm!(A.uplo, A.transa, 'N', A.diag, one(T), A.matrix, X, Y)
 end
