@@ -105,18 +105,18 @@ function test_operator(FC, V, DM, SM)
     end
   end
 
+  nrhs = 3
+  opA_gpu = KrylovOperator(A_gpu; nrhs)
+  for i = 1:5
+    Y_cpu = rand(FC, m, nrhs)
+    X_cpu = rand(FC, n, nrhs)
+    mul!(Y_cpu, A_cpu, X_cpu)
+    Y_gpu = DM(Y_cpu)
+    X_gpu = DM(X_cpu)
+    mul!(Y_gpu, opA_gpu, X_gpu)
+    @test collect(Y_gpu) ≈ Y_cpu
+  end
   if V.body.name.name != :oneArray
-    nrhs = 3
-    opA_gpu = KrylovOperator(A_gpu; nrhs)
-    for i = 1:5
-      Y_cpu = rand(FC, m, nrhs)
-      X_cpu = rand(FC, n, nrhs)
-      mul!(Y_cpu, A_cpu, X_cpu)
-      Y_gpu = DM(Y_cpu)
-      X_gpu = DM(X_cpu)
-      mul!(Y_gpu, opA_gpu, X_gpu)
-      @test collect(Y_gpu) ≈ Y_cpu
-    end
     for j = 1:5
       Y_cpu = rand(FC, m, nrhs)
       X_cpu = rand(FC, n, nrhs)
