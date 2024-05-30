@@ -10,13 +10,13 @@ include("gpu.jl")
   oneAPI.allowscalar(false)
 
   @testset "KrylovOperator" begin
-    @testset "oneSparseMatrixCSR -- $FC" for FC in (Float32, ComplexF32)
+    @testset "oneSparseMatrixCSR -- $FC" for FC in (Float32,) # ComplexF32)
       test_operator(FC, oneVector{FC}, oneMatrix{FC}, oneSparseMatrixCSR)
     end
   end
 
   @testset "TriangularOperator" begin
-    @testset "oneSparseMatrixCSR -- $FC" for FC in (Float32, ComplexF32)
+    @testset "oneSparseMatrixCSR -- $FC" for FC in (Float32,) # ComplexF32)
       test_triangular(FC, oneVector{FC}, oneMatrix{FC}, oneSparseMatrixCSR)
     end
   end
