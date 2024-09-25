@@ -43,6 +43,7 @@ export TriangularOperator
 include("ic0.jl")
 include("ilu0.jl")
 include("blockjacobi.jl")
+include("ilu/IncompleteLU.jl")
 
 # Scaling
 include("scaling.jl")

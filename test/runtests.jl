@@ -2,6 +2,7 @@ using AMDGPU
 using CUDA
 using oneAPI
 using Test
+using KrylovPreconditioners
 
 @testset "KrylovPreconditioners" begin
 if AMDGPU.functional()
@@ -23,5 +24,9 @@ if oneAPI.functional()
     @testset "Testing oneAPI backend" begin
         include("gpu/intel.jl")
     end
+end
+
+@testset "IncompleteLU.jl" begin
+    include("ilu/ilu.jl")
 end
 end
