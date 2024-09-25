@@ -1,10 +1,5 @@
 export ilu
 
-struct ILUFactorization{Tv,Ti} <: Factorization{Tv}
-    L::SparseMatrixCSC{Tv,Ti}
-    U::SparseMatrixCSC{Tv,Ti}
-end
-
 function lutype(T::Type)
     UT = typeof(oneunit(T) - oneunit(T) * (oneunit(T) / (oneunit(T) + zero(T))))
     LT = typeof(oneunit(UT) / oneunit(UT))
