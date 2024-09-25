@@ -24,4 +24,8 @@ if oneAPI.functional()
         include("gpu/intel.jl")
     end
 end
+
+@testset "IncompleteLU.jl" begin
+    include("ilu/ilu.jl")
+end
 end
