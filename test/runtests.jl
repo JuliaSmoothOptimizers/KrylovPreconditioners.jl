@@ -2,6 +2,7 @@ using AMDGPU
 using CUDA
 using oneAPI
 using Test
+using KrylovPreconditioners
 
 @testset "KrylovPreconditioners" begin
 if AMDGPU.functional()

@@ -7,7 +7,7 @@ using LinearAlgebra
         # Test if it performs full LU if droptol is zero
         A = convert(SparseMatrixCSC{Tv, Ti}, sprand(Tv, 10, 10, .5) + 10I)
         ilu = KrylovPreconditioners.ilu(A, τ = 0)
-        flu = lu(Matrix(A), Val(false))
+        flu = lu(Matrix(A), NoPivot())
 
         @test typeof(ilu) == KrylovPreconditioners.ILUFactorization{Tv,Ti}
         @test Matrix(ilu.L + I) ≈ flu.L
