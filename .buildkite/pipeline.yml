@@ -2,7 +2,7 @@ steps:
   - label: "Nvidia GPUs -- CUDA.jl"
     plugins:
       - JuliaCI/julia#v1:
-          version: 1.9
+          version: 1.10
     agents:
       queue: "juliagpu"
       cuda: "*"
@@ -20,7 +20,7 @@ steps:
   - label: "AMD GPUs -- AMDGPU.jl"
     plugins:
       - JuliaCI/julia#v1:
-          version: 1.9
+          version: 1.10
     agents:
       queue: "juliagpu"
       rocm: "*"
@@ -44,7 +44,7 @@ steps:
   - label: "Intel GPUs -- oneAPI.jl"
     plugins:
       - JuliaCI/julia#v1:
-          version: 1.9
+          version: 1.10
     agents:
       queue: "juliagpu"
       intel: "*"
