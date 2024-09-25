@@ -58,4 +58,3 @@ end
 @propagate_inbounds first_in_row(r::RowReader, row::Integer) = r.rows.head[row]
 @propagate_inbounds is_column(column::Integer) = column != 0
 @propagate_inbounds next_row!(r::RowReader, column::Integer) = r.next_in_column[column] += 1
-
