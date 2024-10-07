@@ -8,7 +8,7 @@
 [docs-stable-url]: https://JuliaSmoothOptimizers.github.io/KrylovPreconditioners.jl/stable
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-purple.svg
 [docs-dev-url]: https://JuliaSmoothOptimizers.github.io/KrylovPreconditioners.jl/dev
-[build-gh-img]: https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl/workflows/CI/badge.svg?branch=main
+[build-gh-img]: https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl/workflows/CI/badge.svg
 [build-gh-url]: https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl/actions
 [build-cirrus-img]: https://img.shields.io/cirrus/github/JuliaSmoothOptimizers/KrylovPreconditioners.jl?logo=Cirrus%20CI
 [build-cirrus-url]: https://cirrus-ci.com/github/JuliaSmoothOptimizers/KrylovPreconditioners.jl
