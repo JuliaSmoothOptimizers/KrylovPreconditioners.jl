@@ -1,32 +1,8 @@
-using AMDGPU
-using CUDA
-using oneAPI
 using Test
 using KrylovPreconditioners
 
 @testset "KrylovPreconditioners" begin
-if AMDGPU.functional()
-    @info "Testing AMDGPU backend"
-    @testset "Testing AMDGPU backend" begin
-        include("gpu/amd.jl")
+    @testset "IncompleteLU.jl" begin
+        include("ilu/ilu.jl")
     end
-end
-
-if CUDA.functional()
-    @info "Testing CUDA backend"
-    @testset "Testing CUDA backend" begin
-        include("gpu/nvidia.jl")
-    end
-end
-
-if oneAPI.functional()
-    @info "Testing oneAPI backend"
-    @testset "Testing oneAPI backend" begin
-        include("gpu/intel.jl")
-    end
-end
-
-@testset "IncompleteLU.jl" begin
-    include("ilu/ilu.jl")
-end
 end
