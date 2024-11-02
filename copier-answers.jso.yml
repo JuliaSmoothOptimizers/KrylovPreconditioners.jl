@@ -1,0 +1,8 @@
+PackageName: "KrylovPreconditioners"
+PackageOwner: "JuliaSmoothOptimizers"
+PackageUUID: "45d422c2-293f-44ce-8315-2cb988662dec"
+_src_path: "https://github.com/JuliaSmoothOptimizers/JSOBestieTemplate.jl"
+_commit: "v0.13.0"
+AddBreakage: true
+AddBenchmark: false
+AddBenchmarkCI: true
