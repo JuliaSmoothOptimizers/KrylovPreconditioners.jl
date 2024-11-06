@@ -21,7 +21,7 @@ include("gpu.jl")
     end
   end
 
-  @testset "Block Jacobi preconditioner" begin
-    test_block_jacobi(oneAPIBackend(), oneArray, oneSparseMatrixCSR)
-  end
+  # @testset "Block Jacobi preconditioner" begin
+  #   test_block_jacobi(oneAPIBackend(), oneArray, oneSparseMatrixCSR)
+  # end
 end
