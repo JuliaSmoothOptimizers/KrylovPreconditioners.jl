@@ -1,6 +1,6 @@
 using CUDA, CUDA.CUSPARSE, CUDA.CUSOLVER
 
-_get_type(J::CuSparseMatrixCSR) = CuArray{Float64, 1, CUDA.Mem.DeviceBuffer}
+_get_type(J::CuSparseMatrixCSR) = CuArray{Float64, 1, CUDA.DeviceMemory}
 _is_csr(J::CuSparseMatrixCSR) = true
 _is_csc(J::CuSparseMatrixCSR) = false
 include("gpu.jl")

@@ -58,3 +58,6 @@ steps:
         Pkg.instantiate()
         include("test/gpu/intel.jl")'
     timeout_in_minutes: 30
+    env:
+      OverrideDefaultFP64Settings: 1
+      IGC_EnableDPEmulation: 1
