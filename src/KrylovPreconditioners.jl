@@ -12,21 +12,6 @@ import LinearAlgebra: ldiv!
 abstract type AbstractKrylovPreconditioner end
 export AbstractKrylovPreconditioner
 
-update!(p::AbstractKrylovPreconditioner, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractKrylovOperator, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractKrylovOperator, A) = error("update!() for $(typeof(p)) is not implemented.")
-
-export update!, get_timer, reset_timer!
-
-function get_timer(p::AbstractKrylovPreconditioner)
-    return p.timer_update
-end
-
-function reset_timer!(p::AbstractKrylovPreconditioner)
-    p.timer_update = 0.0
-end
-
 # Operators
 include("operators.jl")
 
@@ -42,5 +27,22 @@ export scaling_csr!
 
 # Ordering
 # include(ordering.jl)
+
+update!(p::AbstractKrylovPreconditioner, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
+update!(p::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(p)) is not implemented.")
+update!(p::AbstractTriangularOperator, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
+update!(p::AbstractTriangularOperator, A) = error("update!() for $(typeof(p)) is not implemented.")
+update!(p::AbstractKrylovOperator, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
+update!(p::AbstractKrylovOperator, A) = error("update!() for $(typeof(p)) is not implemented.")
+
+export update!, get_timer, reset_timer!
+
+function get_timer(p::AbstractKrylovPreconditioner)
+    return p.timer_update
+end
+
+function reset_timer!(p::AbstractKrylovPreconditioner)
+    p.timer_update = 0.0
+end
 
 end # module KrylovPreconditioners
