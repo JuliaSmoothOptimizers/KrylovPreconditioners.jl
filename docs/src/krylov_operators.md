@@ -2,6 +2,9 @@
 
 ```@docs
 KrylovOperator
+update!(::AbstractKrylovOperator, ::Any)
+```
+
 ```
 
 ## Nvidia GPUs

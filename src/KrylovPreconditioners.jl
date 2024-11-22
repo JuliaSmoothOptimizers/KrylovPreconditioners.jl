@@ -13,7 +13,8 @@ abstract type AbstractKrylovPreconditioner end
 export AbstractKrylovPreconditioner
 
 # Operators
-include("operators.jl")
+include("krylov_operators.jl")
+include("triangular_operators.jl")
 
 # Preconditioners
 include("ic0.jl")
@@ -28,12 +29,7 @@ export scaling_csr!
 # Ordering
 # include(ordering.jl)
 
-update!(p::AbstractKrylovPreconditioner, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractTriangularOperator, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractTriangularOperator, A) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractKrylovOperator, A::SparseMatrixCSC) = error("update!() for $(typeof(p)) is not implemented.")
-update!(p::AbstractKrylovOperator, A) = error("update!() for $(typeof(p)) is not implemented.")
+update!(op::AbstractKrylovPreconditioner, A) = error("update!() for $(typeof(op)) is not implemented.")
 
 export update!, get_timer, reset_timer!
 

@@ -2,6 +2,7 @@
 
 ```@docs
 TriangularOperator
+update!(::AbstractTriangularOperator, ::Any)
 ```
 
 ## Nvidia GPUs
