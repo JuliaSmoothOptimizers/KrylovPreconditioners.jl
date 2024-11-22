@@ -1,4 +1,4 @@
-using Documenter, KrylovPreconditioners
+using Documenter, KrylovPreconditioners, SparseArrays
 
 makedocs(
   modules = [KrylovPreconditioners],
