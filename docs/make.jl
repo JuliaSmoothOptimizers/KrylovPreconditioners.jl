@@ -2,6 +2,7 @@ using Documenter, KrylovPreconditioners
 
 makedocs(
   modules = [KrylovPreconditioners],
+  checkdocs = :exports,
   doctest = true,
   linkcheck = true,
   format = Documenter.HTML(assets = ["assets/style.css"],

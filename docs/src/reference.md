@@ -4,3 +4,7 @@
 
 ```@index
 ```
+
+```@docs
+KrylovPreconditioners.update!
+```
