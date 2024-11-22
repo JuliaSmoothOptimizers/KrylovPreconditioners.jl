@@ -10,6 +10,8 @@ makedocs(
                            collapselevel = 1),
   sitename = "KrylovPreconditioners.jl",
   pages = ["Home" => "index.md",
+           "Krylov operators" => "krylov_operators.md",
+           "Triangular operators" => "triangular_operators.md",
            "Reference" => "reference.md"
           ]
 )
