@@ -5,7 +5,9 @@
 ```@index
 ```
 
-```@autodocs
-Modules = [KrylovPreconditioners]
-Order   = [:function, :type]
+```@docs
+KrylovPreconditioners.update!(::BlockJacobiPreconditioner, ::SparseMatrixCSC)
+KrylovPreconditioners.BlockJacobiPreconditioner
+KrylovPreconditioners.backward_substitution!
+KrylovPreconditioners.forward_substitution!
 ```

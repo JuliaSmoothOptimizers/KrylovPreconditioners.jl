@@ -1,7 +1,8 @@
-using Documenter, KrylovPreconditioners
+using Documenter, KrylovPreconditioners, SparseArrays
 
 makedocs(
   modules = [KrylovPreconditioners],
+  checkdocs = :exports,
   doctest = true,
   linkcheck = true,
   format = Documenter.HTML(assets = ["assets/style.css"],
@@ -10,6 +11,8 @@ makedocs(
                            collapselevel = 1),
   sitename = "KrylovPreconditioners.jl",
   pages = ["Home" => "index.md",
+           "Krylov operators" => "krylov_operators.md",
+           "Triangular operators" => "triangular_operators.md",
            "Reference" => "reference.md"
           ]
 )
