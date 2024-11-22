@@ -5,8 +5,6 @@ KrylovOperator
 update!(::AbstractKrylovOperator, ::Any)
 ```
 
-```
-
 ## Nvidia GPUs
 
 Sparse matrices have a specific storage on Nvidia GPUs (`CuSparseMatrixCSC`, `CuSparseMatrixCSR` or `CuSparseMatrixCOO`):
