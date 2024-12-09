@@ -44,3 +44,8 @@ It also contains operators that improve the efficiency of sparse matrix-dense ve
 
 [KrylovPreconditioners.jl](https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl) is the best sidekick of [Krylov.jl](https://github.com/JuliaSmoothOptimizers/Krylov.jl). └(^o^ )Ｘ( ^o^)┘
 
+
+### Acknowledgement
+
+This repository includes code originally from the repository [IncompleteLU.jl](https://github.com/haampie/IncompleteLU.jl), authored by [Harmen Stoppels](https://github.com/haampie).
+The original code was adapted for use in this repository.
