@@ -1,4 +1,4 @@
-module KrylovPreconditionersoneAPIExt
+module KrylovPreconditionersOneAPIExt
 using LinearAlgebra
 using SparseArrays
 using oneAPI

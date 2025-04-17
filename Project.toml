@@ -19,13 +19,13 @@ oneAPI = "8f75cd03-7ff8-4ecb-9b8f-daf728133b1b"
 [extensions]
 KrylovPreconditionersAMDGPUExt = "AMDGPU"
 KrylovPreconditionersCUDAExt = "CUDA"
-KrylovPreconditionersoneAPIExt = "oneAPI"
+KrylovPreconditionersOneAPIExt = "oneAPI"
 
 [compat]
 AMDGPU = "1.0"
 Adapt = "4"
 CUDA = "5.7.3"
-oneAPI = "2"
+oneAPI = "2.0.1"
 KernelAbstractions = "0.9"
 Krylov = "0.9.4"
 LightGraphs = "1"
