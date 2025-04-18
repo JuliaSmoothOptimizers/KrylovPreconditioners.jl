@@ -212,8 +212,8 @@ function generate_random_system(n::Int, m::Int)
 end
 
 function test_block_jacobi(device, AT, SMT)
-    n, m = 100, 100
-    A, b, x♯  = generate_random_system(n, m)
+    m, n = 100, 100
+    A, b, x♯  = generate_random_system(m, n)
     # Transfer data to device
     A = A |> SMT
     b = b |> AT
@@ -227,17 +227,10 @@ function test_block_jacobi(device, AT, SMT)
     update!(precond, A)
 
     S = _get_type(A)
-    linear_solver = Krylov.BicgstabSolver(n, m, S)
-    Krylov.bicgstab!(
-        linear_solver, A, b;
-        N=precond,
-        atol=1e-10,
-        rtol=1e-10,
-        verbose=0,
-        history=true,
-    )
-    n_iters = linear_solver.stats.niter
-    copyto!(x, linear_solver.x)
+    workspace = BicgstabWorkspace(m, n, S)
+    bicgstab!(workspace, A, b; N=precond, atol=1e-10, rtol=1e-10, verbose=0, history=true)
+    n_iters = Krylov.iteration_count(workspace)
+    copyto!(x, workspace.x)
     r = b - A * x
     resid = norm(r) / norm(b)
     @test(resid ≤ 1e-6)
