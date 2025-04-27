@@ -1,10 +1,8 @@
 KP.BlockJacobiPreconditioner(J::rocSPARSE.ROCSparseMatrixCSC; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
 KP.BlockJacobiPreconditioner(J::rocSPARSE.ROCSparseMatrixCSR; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
-KP.BlockJacobiPreconditioner(J::rocSPARSE.ROCSparseMatrixCOO; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
 
 KP.kp_block_jacobi(J::rocSPARSE.ROCSparseMatrixCSC) = KP.BlockJacobiPreconditioner(J; device=ROCBackend())
 KP.kp_block_jacobi(J::rocSPARSE.ROCSparseMatrixCSR) = KP.BlockJacobiPreconditioner(J; device=ROCBackend())
-KP.kp_block_jacobi(J::rocSPARSE.ROCSparseMatrixCOO) = KP.BlockJacobiPreconditioner(J; device=ROCBackend())
 
 function KP.create_blocklist(cublocks::ROCArray, npart)
     blocklist = Array{ROCMatrix{Float64}}(undef, npart)
