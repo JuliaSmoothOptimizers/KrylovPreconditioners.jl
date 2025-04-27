@@ -236,4 +236,6 @@ function test_block_jacobi(device, AT, SMT)
     @test(resid ≤ 1e-6)
     @test x ≈ x♯
     @test n_iters ≤ n
+
+    P = kp_block_jacobi(A)
 end

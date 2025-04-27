@@ -13,6 +13,7 @@ makedocs(
   pages = ["Home" => "index.md",
            "Krylov operators" => "krylov_operators.md",
            "Triangular operators" => "triangular_operators.md",
+           "Preconditioners" => "krylov_preconditioners.md",
            "Reference" => "reference.md"
           ]
 )

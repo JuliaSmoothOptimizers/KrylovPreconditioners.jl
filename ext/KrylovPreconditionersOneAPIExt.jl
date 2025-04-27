@@ -13,7 +13,7 @@ const KP = KrylovPreconditioners
 using KernelAbstractions
 const KA = KernelAbstractions
 
-include("oneAPI/blockjacobi.jl")
+include("oneAPI/block_jacobi.jl")
 include("oneAPI/operators.jl")
 
 end

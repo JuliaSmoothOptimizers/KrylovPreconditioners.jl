@@ -1,5 +1,7 @@
 KP.BlockJacobiPreconditioner(J::oneMKL.oneSparseMatrixCSR; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
 
+KP.kp_block_jacobi(J::oneMKL.oneSparseMatrixCSR) = KP.BlockJacobiPreconditioner(J; device=oneAPIBackend())
+
 function KP.create_blocklist(cublocks::oneArray, npart)
     blocklist = Array{oneMatrix{Float64}}(undef, npart)
     for b in 1:npart

@@ -1,7 +1,10 @@
 using oneAPI, oneAPI.oneMKL
 
 _get_type(J::oneSparseMatrixCSR) = oneArray{Float64, 1, oneAPI.oneL0.DeviceBuffer}
+
 _is_csr(J::oneSparseMatrixCSR) = true
+_is_csc(J::oneSparseMatrixCSR) = false
+
 include("gpu.jl")
 
 @testset "Intel -- oneAPI.jl" begin
