@@ -14,8 +14,8 @@ include("krylov_operators.jl")
 include("triangular_operators.jl")
 
 # Preconditioners
-include("block_jacobi.jl")
 include("krylov_preconditioners.jl")
+include("block_jacobi.jl")
 include("ilu/IncompleteLU.jl")
 
 # Scaling
