@@ -1,5 +1,5 @@
 export AbstractKrylovPreconditioner
-export kp_ic0, kp_ilu0
+export kp_ic0, kp_ilu0, kp_block_jacobi
 
 abstract type AbstractKrylovPreconditioner end
 
