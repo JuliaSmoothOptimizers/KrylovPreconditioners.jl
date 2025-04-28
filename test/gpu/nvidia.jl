@@ -1,8 +1,14 @@
 using CUDA, CUDA.CUSPARSE, CUDA.CUSOLVER
 
 _get_type(J::CuSparseMatrixCSR) = CuArray{Float64, 1, CUDA.DeviceMemory}
+_get_type(J::CuSparseMatrixCSC) = CuArray{Float64, 1, CUDA.DeviceMemory}
+
 _is_csr(J::CuSparseMatrixCSR) = true
+_is_csr(J::CuSparseMatrixCSC) = false
+
 _is_csc(J::CuSparseMatrixCSR) = false
+_is_csc(J::CuSparseMatrixCSC) = true
+
 include("gpu.jl")
 
 @testset "Nvidia -- CUDA.jl" begin
@@ -51,6 +57,7 @@ include("gpu.jl")
 
   @testset "Block Jacobi preconditioner" begin
     test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSR)
+    test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSC; test_update=false)
   end
 
 end

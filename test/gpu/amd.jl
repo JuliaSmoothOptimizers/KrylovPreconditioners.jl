@@ -1,8 +1,14 @@
 using AMDGPU, AMDGPU.rocSPARSE, AMDGPU.rocSOLVER
 
 _get_type(J::ROCSparseMatrixCSR) = ROCArray{Float64, 1, AMDGPU.Mem.HIPBuffer}
+_get_type(J::ROCSparseMatrixCSC) = ROCArray{Float64, 1, AMDGPU.Mem.HIPBuffer}
+
 _is_csr(J::ROCSparseMatrixCSR) = true
+_is_csr(J::ROCSparseMatrixCSC) = false
+
 _is_csc(J::ROCSparseMatrixCSR) = false
+_is_csc(J::ROCSparseMatrixCSC) = true
+
 include("gpu.jl")
 
 @testset "AMD -- AMDGPU.jl" begin
@@ -51,6 +57,7 @@ include("gpu.jl")
 
   @testset "Block Jacobi preconditioner" begin
     test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSR)
+    test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSC; test_update=false)
   end
 
 end

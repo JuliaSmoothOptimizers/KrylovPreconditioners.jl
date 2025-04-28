@@ -1,4 +1,8 @@
+KP.BlockJacobiPreconditioner(J::CUSPARSE.CuSparseMatrixCSC; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
 KP.BlockJacobiPreconditioner(J::CUSPARSE.CuSparseMatrixCSR; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
+
+KP.kp_block_jacobi(J::CUSPARSE.CuSparseMatrixCSC) = KP.BlockJacobiPreconditioner(J; device=CUDABackend())
+KP.kp_block_jacobi(J::CUSPARSE.CuSparseMatrixCSR) = KP.BlockJacobiPreconditioner(J; device=CUDABackend())
 
 function KP.create_blocklist(cublocks::CuArray, npart)
     blocklist = Array{CuMatrix{Float64}}(undef, npart)

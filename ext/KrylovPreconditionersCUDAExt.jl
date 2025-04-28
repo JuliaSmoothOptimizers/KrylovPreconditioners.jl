@@ -14,7 +14,7 @@ const KA = KernelAbstractions
 
 include("CUDA/ic0.jl")
 include("CUDA/ilu0.jl")
-include("CUDA/blockjacobi.jl")
+include("CUDA/block_jacobi.jl")
 include("CUDA/operators.jl")
 include("CUDA/scaling.jl")
 

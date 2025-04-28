@@ -151,6 +151,8 @@ function BlockJacobiPreconditioner(J::SparseMatrixCSC; nblocks=-1, device=CPU(),
     return BlockJacobiPreconditioner(J, npartitions, device, noverlaps)
 end
 
+kp_block_jacobi(J::SparseMatrixCSC) = BlockJacobiPreconditioner(J; device=CPU())
+
 Base.eltype(::BlockJacobiPreconditioner) = Float64
 
 # NOTE: Custom kernel to implement blocks - vector multiplication.

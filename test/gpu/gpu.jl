@@ -211,7 +211,7 @@ function generate_random_system(n::Int, m::Int)
     return spA, b, x♯
 end
 
-function test_block_jacobi(device, AT, SMT)
+function test_block_jacobi(device, AT, SMT; test_update::Bool=true)
     m, n = 100, 100
     A, b, x♯  = generate_random_system(m, n)
     # Transfer data to device
@@ -224,7 +224,7 @@ function test_block_jacobi(device, AT, SMT)
       scaling_csr!(A, b, device)
     end
     precond = BlockJacobiPreconditioner(A, nblocks, device)
-    update!(precond, A)
+    test_update && update!(precond, A)
 
     S = _get_type(A)
     workspace = BicgstabWorkspace(m, n, S)
@@ -236,4 +236,6 @@ function test_block_jacobi(device, AT, SMT)
     @test(resid ≤ 1e-6)
     @test x ≈ x♯
     @test n_iters ≤ n
+
+    P = kp_block_jacobi(A)
 end
