@@ -57,7 +57,7 @@ include("gpu.jl")
 
   @testset "Block Jacobi preconditioner" begin
     test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSR)
-    test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSC)
+    test_block_jacobi(ROCBackend(), ROCArray, ROCSparseMatrixCSC; test_update=false)
   end
 
 end

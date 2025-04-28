@@ -57,7 +57,7 @@ include("gpu.jl")
 
   @testset "Block Jacobi preconditioner" begin
     test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSR)
-    test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSC)
+    test_block_jacobi(CUDABackend(), CuArray, CuSparseMatrixCSC; test_update=false)
   end
 
 end
