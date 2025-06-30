@@ -44,3 +44,45 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           files: lcov.info
+
+  gpu:
+    runs-on:
+      labels: ${{ matrix.gpu-backend }}
+    continue-on-error: true
+    strategy:
+      matrix:
+        julia-version: ['1']
+        julia-arch: [x64]
+        gpu-backend: [cuda, amdgpu, oneapi]
+        include:
+          - gpu-backend: cuda
+            package: CUDA
+            test-file: test/gpu/nvidia.jl
+          - gpu-backend: amdgpu
+            package: AMDGPU
+            test-file: test/gpu/amd.jl
+          - gpu-backend: oneapi
+            package: oneAPI
+            test-file: test/gpu/intel.jl
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Setup Julia
+      uses: julia-actions/setup-julia@latest
+      with:
+        version: ${{ matrix.julia-version }}
+    - uses: julia-actions/cache@v2
+    - name: Install ${{ matrix.package }}
+      run: |
+        julia --color=yes -e '
+          using Pkg
+          Pkg.add("${{ matrix.package }}")
+          Pkg.update()'
+    - name: Run tests
+      run: |
+        julia --color=yes --project=./test -e '
+          using Pkg
+          Pkg.develop(path=".")
+          Pkg.instantiate()
+          using ${{ matrix.package }}
+          include("${{ matrix.test-file }}")'
