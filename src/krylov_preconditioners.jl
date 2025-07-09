@@ -33,7 +33,7 @@ function kp_ic0 end
 kp_ic0(A) = error("kp_ic0 is not implemented for $(typeof(A))")
 
 """
-    P = kp_ic0(A)
+    P = kp_ilu0(A)
 
 Construct an incomplete LU preconditioner with zero fill-in -- ILU(0), to accelerate Krylov solvers on GPU architectures.
 
