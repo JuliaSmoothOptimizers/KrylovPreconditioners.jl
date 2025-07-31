@@ -1,7 +1,5 @@
 export BlockJacobiPreconditioner
 
-using LightGraphs, Metis
-
 """
     overlap(Graph, subset, level)
 
@@ -10,7 +8,7 @@ subset2 contains subset and all of its adjacent vertices.
 """
 function overlap(Graph, subset; level=1)
     @assert level > 0
-    subset2 = [LightGraphs.neighbors(Graph, v) for v in subset]
+    subset2 = [Graphs.neighbors(Graph, v) for v in subset]
     subset2 = reduce(vcat, subset2)
     subset2 = unique(vcat(subset, subset2))
 
@@ -77,7 +75,7 @@ function BlockJacobiPreconditioner(J, npart::Int64, device=CPU(), olevel=0)
                 "least 2 for partitioning in Metis")
     end
     adj = build_adjmatrix(SparseMatrixCSC(J))
-    g = LightGraphs.Graph(adj)
+    g = Graphs.Graph(adj)
     part = Metis.partition(g, npart)
     partitions = Vector{Vector{Int64}}()
     for i in 1:npart

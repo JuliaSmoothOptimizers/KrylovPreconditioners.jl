@@ -9,6 +9,8 @@ const KA = KernelAbstractions
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!
 
+using Graphs, Metis
+
 # Operators
 include("krylov_operators.jl")
 include("triangular_operators.jl")
