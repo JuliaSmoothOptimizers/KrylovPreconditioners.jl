@@ -17,7 +17,7 @@ for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T}), :BlasFloat),)
             if nrhs == 1
                 oneMKL.sparse_optimize_gemv!(transa, A)
             else
-                oneMKL.sparse_optimize_gemm!(trans, 'N', nrhs, A)
+                oneMKL.sparse_optimize_gemm!(transa, 'N', nrhs, A)
             end
             return INTEL_KrylovOperator{T}(T, m, n, nrhs, transa, A)
         end
