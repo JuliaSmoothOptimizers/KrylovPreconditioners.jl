@@ -6,6 +6,7 @@ Random.seed!(666)
 function test_ic0(FC, V, M)
   n = 100
   R = real(FC)
+  tol = eps(R) |> sqrt
   A_cpu = rand(FC, n, n)
   A_cpu = A_cpu * A_cpu'
   A_cpu = sparse(A_cpu)
@@ -19,9 +20,9 @@ function test_ic0(FC, V, M)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
   if (FC <: ComplexF64) && V.body.name.name == :ROCArray
-    @test_broken norm(r_gpu) ≤ 1e-6
+    @test_broken norm(r_gpu) ≤ tol
   else
-    @test norm(r_gpu) ≤ 1e-8
+    @test norm(r_gpu) ≤ tol
   end
 
   A_gpu = M(A_cpu + 200*I)
@@ -30,15 +31,16 @@ function test_ic0(FC, V, M)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
   if (FC <: ComplexF64) && V.body.name.name == :ROCArray
-    @test_broken norm(r_gpu) ≤ 1e-6
+    @test_broken norm(r_gpu) ≤ tol
   else
-    @test norm(r_gpu) ≤ 1e-8
+    @test norm(r_gpu) ≤ tol
   end
 end
 
 function test_ilu0(FC, V, M)
   n = 100
   R = real(FC)
+  tol = eps(R) |> sqrt
   A_cpu = rand(FC, n, n)
   A_cpu = sparse(A_cpu)
   b_cpu = rand(FC, n)
@@ -50,17 +52,19 @@ function test_ilu0(FC, V, M)
   x_gpu, stats = gmres(A_gpu, b_gpu, N=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
-  @test norm(r_gpu) ≤ 1e-8
+  @test norm(r_gpu) ≤ tol
 
   A_gpu = M(A_cpu + 200*I)
   update!(P, A_gpu)
   x_gpu, stats = gmres(A_gpu, b_gpu, N=P, ldiv=true)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.niter ≤ 5
-  @test norm(r_gpu) ≤ 1e-8
+  @test norm(r_gpu) ≤ tol
 end
 
 function test_operator(FC, V, DM, SM)
+  R = real(FC)
+  tol = eps(R) |> sqrt
   m = 200
   n = 100
   A_cpu = rand(FC, n, n)
@@ -74,7 +78,7 @@ function test_operator(FC, V, DM, SM)
   x_gpu, stats = gmres(opA_gpu, b_gpu)
   r_gpu = b_gpu - A_gpu * x_gpu
   @test stats.solved
-  @test norm(r_gpu) ≤ 1e-8
+  @test norm(r_gpu) ≤ tol
 
   A_cpu = rand(FC, m, n)
   A_cpu = sparse(A_cpu)

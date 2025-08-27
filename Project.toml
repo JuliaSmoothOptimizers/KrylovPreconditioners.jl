@@ -22,7 +22,7 @@ KrylovPreconditionersCUDAExt = "CUDA"
 KrylovPreconditionersOneAPIExt = "oneAPI"
 
 [compat]
-AMDGPU = "2"
+AMDGPU = "2.0.1"
 Adapt = "4"
 CUDA = "5.7.3"
 Graphs = "1.13.0"
@@ -34,7 +34,7 @@ Random = "1.10"
 SparseArrays = "1.10"
 Test = "1.10"
 julia = "1.10"
-oneAPI = "2.0.1"
+oneAPI = "2.1.0"
 
 [extras]
 Krylov = "ba0b0d4f-ebba-5204-a429-3ac8c609bfb7"
