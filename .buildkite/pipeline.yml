@@ -1,8 +1,11 @@
 steps:
-  - label: "Nvidia GPUs -- CUDA.jl"
+  - label: "Nvidia GPUs -- CUDA.jl (Julia {{matrix}})"
     plugins:
       - JuliaCI/julia#v1:
-          version: "1.12"
+          version: "{{matrix}}"
+    matrix:
+      - "1.10"
+      - "1.12"
     agents:
       queue: "juliagpu"
       cuda: "*"
@@ -17,10 +20,13 @@ steps:
         include("test/gpu/nvidia.jl")'
     timeout_in_minutes: 30
 
-  - label: "AMD GPUs -- AMDGPU.jl"
+  - label: "AMD GPUs -- AMDGPU.jl (Julia {{matrix}})"
     plugins:
       - JuliaCI/julia#v1:
-          version: "1.12"
+          version: "{{matrix}}"
+    matrix:
+      - "1.10"
+      - "1.12"
     agents:
       queue: "juliagpu"
       rocm: "*"
@@ -41,10 +47,13 @@ steps:
         include("test/gpu/amd.jl")'
     timeout_in_minutes: 30
 
-  - label: "Intel GPUs -- oneAPI.jl"
+  - label: "Intel GPUs -- oneAPI.jl (Julia {{matrix}})"
     plugins:
       - JuliaCI/julia#v1:
-          version: "1.12"
+          version: "{{matrix}}"
+    matrix:
+      - "1.10"
+      - "1.12"
     agents:
       queue: "juliagpu"
       intel: "*"
