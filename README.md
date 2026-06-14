@@ -2,7 +2,7 @@
 
 | **Documentation** | **CI** | **Coverage** | **Downloads** |
 |:-----------------:|:------:|:------------:|:-------------:|
-| [![docs-dev][docs-dev-img]][docs-dev-url] | [![build-gh][build-gh-img]][build-gh-url] [![build-cirrus][build-cirrus-img]][build-cirrus-url] | [![codecov][codecov-img]][codecov-url] | [![downloads][downloads-img]][downloads-url] |
+| [![docs-dev][docs-dev-img]][docs-dev-url] | [![build-gh][build-gh-img]][build-gh-url] | [![codecov][codecov-img]][codecov-url] | [![downloads][downloads-img]][downloads-url] |
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]: https://JuliaSmoothOptimizers.github.io/KrylovPreconditioners.jl/stable
@@ -10,8 +10,6 @@
 [docs-dev-url]: https://JuliaSmoothOptimizers.github.io/KrylovPreconditioners.jl/dev
 [build-gh-img]: https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl/workflows/CI/badge.svg
 [build-gh-url]: https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl/actions
-[build-cirrus-img]: https://img.shields.io/cirrus/github/JuliaSmoothOptimizers/KrylovPreconditioners.jl?logo=Cirrus%20CI
-[build-cirrus-url]: https://cirrus-ci.com/github/JuliaSmoothOptimizers/KrylovPreconditioners.jl
 [codecov-img]: https://codecov.io/gh/JuliaSmoothOptimizers/KrylovPreconditioners.jl/branch/main/graph/badge.svg
 [codecov-url]: https://app.codecov.io/gh/JuliaSmoothOptimizers/KrylovPreconditioners.jl
 [downloads-img]: https://img.shields.io/badge/dynamic/json?url=http%3A%2F%2Fjuliapkgstats.com%2Fapi%2Fv1%2Fmonthly_downloads%2FKrylovPreconditioners&query=total_requests&suffix=%2Fmonth&label=Downloads
@@ -43,7 +41,6 @@ This package provides a variety of preconditioning strategies that significantly
 It also contains operators that improve the efficiency of sparse matrix-dense vector products and sparse triangular solves on different GPUs, ensuring better performance on modern hardware.
 
 [KrylovPreconditioners.jl](https://github.com/JuliaSmoothOptimizers/KrylovPreconditioners.jl) is the best sidekick of [Krylov.jl](https://github.com/JuliaSmoothOptimizers/Krylov.jl). └(^o^ )Ｘ( ^o^)┘
-
 
 ### Acknowledgement
 
