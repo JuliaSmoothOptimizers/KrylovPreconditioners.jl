@@ -1,16 +1,17 @@
-mutable struct INTEL_KrylovOperator{T} <: AbstractKrylovOperator{T}
+mutable struct INTEL_KrylovOperator{T,INT} <: AbstractKrylovOperator{T}
     type::Type{T}
     m::Int
     n::Int
     nrhs::Int
     transa::Char
-    matrix::oneSparseMatrixCSR{T}
+    matrix::oneSparseMatrixCSR{T,INT}
 end
 
 eltype(A::INTEL_KrylovOperator{T}) where T = T
 size(A::INTEL_KrylovOperator) = (A.m, A.n)
 
-for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T}), :BlasFloat),)
+for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T,Int32}), :BlasFloat),
+                                     (:(oneSparseMatrixCSR{T,Int64}), :BlasFloat))
     @eval begin
         function KP.KrylovOperator(A::$SparseMatrixType; nrhs::Int=1, transa::Char='N') where T <: $BlasType
             m,n = size(A)
@@ -48,7 +49,7 @@ function LinearAlgebra.mul!(Y::oneMatrix{T}, A::INTEL_KrylovOperator{T}, X::oneM
     oneMKL.sparse_gemm!(A.transa, 'N', alpha, A.matrix, X, beta, Y)
 end
 
-mutable struct INTEL_TriangularOperator{T} <: AbstractTriangularOperator{T}
+mutable struct INTEL_TriangularOperator{T,INT} <: AbstractTriangularOperator{T}
     type::Type{T}
     m::Int
     n::Int
@@ -56,13 +57,14 @@ mutable struct INTEL_TriangularOperator{T} <: AbstractTriangularOperator{T}
     uplo::Char
     diag::Char
     transa::Char
-    matrix::oneSparseMatrixCSR{T}
+    matrix::oneSparseMatrixCSR{T,INT}
 end
 
 eltype(A::INTEL_TriangularOperator{T}) where T = T
 size(A::INTEL_TriangularOperator) = (A.m, A.n)
 
-for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T}), :BlasFloat),)
+for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T,Int32}), :BlasFloat),
+                                     (:(oneSparseMatrixCSR{T,Int64}), :BlasFloat))
     @eval begin
         function KP.TriangularOperator(A::$SparseMatrixType, uplo::Char, diag::Char; nrhs::Int=1, transa::Char='N') where T <: $BlasType
             m,n = size(A)
