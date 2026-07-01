@@ -29,8 +29,8 @@ function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::CUDABackend)
     for b in 1:nblocks
         p.blocklist[b] .= p.cublocks[:,:,b]
     end
-    CUDA.@sync pivot, info = CUBLAS.getrf_batched!(p.blocklist, true)
-    CUDA.@sync pivot, info, p.blocklist = CUBLAS.getri_batched(p.blocklist, pivot)
+    @sync pivot, info = CUBLAS.getrf_batched!(p.blocklist, true)
+    @sync pivot, info, p.blocklist = CUBLAS.getri_batched(p.blocklist, pivot)
     for b in 1:nblocks
         p.cublocks[:,:,b] .= p.blocklist[b]
     end

@@ -1,4 +1,4 @@
-using CUDA, CUDA.CUSPARSE, CUDA.CUSOLVER
+using CUDA, CUDA.cuSPARSE
 
 _get_type(J::CuSparseMatrixCSR) = CuArray{Float64, 1, CUDA.DeviceMemory}
 _get_type(J::CuSparseMatrixCSC) = CuArray{Float64, 1, CUDA.DeviceMemory}

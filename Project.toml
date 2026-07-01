@@ -1,7 +1,7 @@
 name = "KrylovPreconditioners"
 uuid = "45d422c2-293f-44ce-8315-2cb988662dec"
 authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>"]
-version = "0.3.8"
+version = "0.4.0"
 
 [deps]
 Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
@@ -13,18 +13,21 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [weakdeps]
 AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
-CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+CUDACore = "bd0ed864-bdfe-4181-a5ed-ce625a5fdea2"
+cuBLAS = "182d3088-87b7-4494-8cad-fc6afaa545bc"
+cuSPARSE = "b26da814-b3bc-49ef-b0ee-c816305aa060"
 oneAPI = "8f75cd03-7ff8-4ecb-9b8f-daf728133b1b"
 
 [extensions]
 KrylovPreconditionersAMDGPUExt = "AMDGPU"
-KrylovPreconditionersCUDAExt = "CUDA"
+KrylovPreconditionersCuBLASExt = ["CUDACore", "cuSPARSE", "cuBLAS"]
+KrylovPreconditionersCuSPARSEExt = ["CUDACore", "cuSPARSE"]
 KrylovPreconditionersOneAPIExt = "oneAPI"
 
 [compat]
 AMDGPU = "2.0.1"
 Adapt = "4"
-CUDA = "5.7.3, 6.2"
+CUDACore = "6.2"
 Graphs = "1.13.0"
 KernelAbstractions = "0.9"
 Krylov = "0.10.0"
@@ -33,6 +36,8 @@ Metis = "1"
 Random = "1.10"
 SparseArrays = "1.10"
 Test = "1.10"
+cuBLAS = "6.2"
+cuSPARSE = "6.2"
 julia = "1.10"
 oneAPI = "2.1.0"
 
