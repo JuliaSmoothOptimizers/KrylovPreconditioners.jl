@@ -1,8 +1,9 @@
-module KrylovPreconditionersCUDAExt
+module KrylovPreconditionersCuSPARSEExt
 using LinearAlgebra
 using SparseArrays
-using CUDA
-using CUDA.CUSPARSE, CUDA.CUBLAS
+using CUDACore
+using cuSPARSE
+const CUSPARSE = cuSPARSE
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!, mul!
 import Base: size, eltype, unsafe_convert
@@ -14,7 +15,6 @@ const KA = KernelAbstractions
 
 include("CUDA/ic0.jl")
 include("CUDA/ilu0.jl")
-include("CUDA/block_jacobi.jl")
 include("CUDA/operators.jl")
 include("CUDA/scaling.jl")
 
