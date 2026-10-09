@@ -9,7 +9,7 @@ kp_block_jacobi
 ## Nvidia GPUs
 
 ```julia
-using CUDA, CUDA.CUSPARSE
+using CUDA, CUDA.cuSPARSE
 using SparseArrays
 using KrylovPreconditioners
 
