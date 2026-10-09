@@ -10,7 +10,7 @@ update!(::AbstractTriangularOperator, ::Any)
 Sparse matrices have a specific storage on Nvidia GPUs (`CuSparseMatrixCSC`, `CuSparseMatrixCSR` or `CuSparseMatrixCOO`):
 
 ```julia
-using CUDA, CUDA.CUSPARSE
+using CUDA, CUDA.cuSPARSE
 using SparseArrays
 using KrylovPreconditioners
 

@@ -1,8 +1,8 @@
-KP.BlockJacobiPreconditioner(J::CUSPARSE.CuSparseMatrixCSC; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
-KP.BlockJacobiPreconditioner(J::CUSPARSE.CuSparseMatrixCSR; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
+KP.BlockJacobiPreconditioner(J::cuSPARSE.CuSparseMatrixCSC; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
+KP.BlockJacobiPreconditioner(J::cuSPARSE.CuSparseMatrixCSR; options...) = BlockJacobiPreconditioner(SparseMatrixCSC(J); options...)
 
-KP.kp_block_jacobi(J::CUSPARSE.CuSparseMatrixCSC) = KP.BlockJacobiPreconditioner(J; device=CUDABackend())
-KP.kp_block_jacobi(J::CUSPARSE.CuSparseMatrixCSR) = KP.BlockJacobiPreconditioner(J; device=CUDABackend())
+KP.kp_block_jacobi(J::cuSPARSE.CuSparseMatrixCSC) = KP.BlockJacobiPreconditioner(J; device=CUDABackend())
+KP.kp_block_jacobi(J::cuSPARSE.CuSparseMatrixCSR) = KP.BlockJacobiPreconditioner(J; device=CUDABackend())
 
 function KP.create_blocklist(cublocks::CuArray, npart)
     blocklist = Array{CuMatrix{Float64}}(undef, npart)
@@ -29,8 +29,8 @@ function _update_gpu(p, j_rowptr, j_colval, j_nzval, device::CUDABackend)
     for b in 1:nblocks
         p.blocklist[b] .= p.cublocks[:,:,b]
     end
-    CUDA.@sync pivot, info = CUBLAS.getrf_batched!(p.blocklist, true)
-    CUDA.@sync pivot, info, p.blocklist = CUBLAS.getri_batched(p.blocklist, pivot)
+    CUDA.@sync pivot, info = cuBLAS.getrf_batched!(p.blocklist, true)
+    CUDA.@sync pivot, info, p.blocklist = cuBLAS.getri_batched(p.blocklist, pivot)
     for b in 1:nblocks
         p.cublocks[:,:,b] .= p.blocklist[b]
     end
@@ -47,6 +47,6 @@ Update the preconditioner `p` from the sparse Jacobian `J` in CSR format for CUD
 3) Extract the preconditioner matrix `p.P` from the dense blocks `cuJs`
 
 """
-function KP.update!(p::BlockJacobiPreconditioner, J::CUSPARSE.CuSparseMatrixCSR)
+function KP.update!(p::BlockJacobiPreconditioner, J::cuSPARSE.CuSparseMatrixCSR)
     _update_gpu(p, J.rowPtr, J.colVal, J.nzVal, p.device)
 end
