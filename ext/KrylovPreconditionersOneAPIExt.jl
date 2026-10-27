@@ -1,8 +1,9 @@
 module KrylovPreconditionersOneAPIExt
 using oneAPI
 
-# Don't do anything if oneAPI isn't actually available.
-if oneAPI.oneL0.NEO_jll.is_available() && oneAPI.oneL0.functional[]
+# Don't do anything on platforms where oneAPI isn't available. `oneL0.functional[]`
+# can't be used here: it is only set at runtime, never during precompilation.
+if oneAPI.oneL0.NEO_jll.is_available()
     using oneAPI: global_queue, sycl_queue, context, device
     using LinearAlgebra
     using SparseArrays
