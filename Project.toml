@@ -1,7 +1,7 @@
 name = "KrylovPreconditioners"
 uuid = "45d422c2-293f-44ce-8315-2cb988662dec"
 authors = ["Alexis Montoison <alexis.montoison@polymtl.ca>"]
-version = "0.3.8"
+version = "0.4.0"
 
 [deps]
 Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
@@ -22,11 +22,11 @@ KrylovPreconditionersCUDAExt = "CUDA"
 KrylovPreconditionersOneAPIExt = "oneAPI"
 
 [compat]
-AMDGPU = "2.0.1"
+AMDGPU = "2.10"
 Adapt = "4"
-CUDA = "6.2"
+CUDA = "6.5"
 Graphs = "1.13.0"
-KernelAbstractions = "0.9"
+KernelAbstractions = "0.10"
 Krylov = "0.10.0"
 LinearAlgebra = "1.10"
 Metis = "1"
@@ -34,7 +34,7 @@ Random = "1.10"
 SparseArrays = "1.10"
 Test = "1.10"
 julia = "1.10"
-oneAPI = "2.1.0"
+oneAPI = "2.10"
 
 [extras]
 Krylov = "ba0b0d4f-ebba-5204-a429-3ac8c609bfb7"
