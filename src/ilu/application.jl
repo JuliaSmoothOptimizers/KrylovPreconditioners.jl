@@ -47,6 +47,10 @@ end
 (\)(F::ILUFactorization, y::AbstractVecOrMat) = ldiv!(F, copy(y))
 (\)(F::AdjointFactorization{<:Any,<:ILUFactorization}, y::AbstractVecOrMat) = ldiv!(F, copy(y))
 
+# Resolve ambiguities with LinearAlgebra's `\(::Factorization{T}, ::VecOrMat{Complex{T}})`
+(\)(F::ILUFactorization{T}, y::VecOrMat{Complex{T}}) where T<:BlasReal = ldiv!(F, copy(y))
+(\)(F::AdjointFactorization{T,<:ILUFactorization}, y::VecOrMat{Complex{T}}) where T<:BlasReal = ldiv!(F, copy(y))
+
 """
 Applies in-place backward substitution with the U factor of F, under the assumptions:
 
