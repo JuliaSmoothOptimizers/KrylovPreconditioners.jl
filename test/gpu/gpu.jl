@@ -1,5 +1,6 @@
 using SparseArrays, Random, Test
 using LinearAlgebra, Krylov, KrylovPreconditioners
+import KrylovPreconditioners: update!  # CUDA.jl also exports `update!`
 
 Random.seed!(666)
 

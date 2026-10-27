@@ -20,7 +20,7 @@ for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T,Int32}), :BlasFloat
             else
                 oneMKL.sparse_optimize_gemm!(transa, 'N', nrhs, A)
             end
-            return INTEL_KrylovOperator{T}(T, m, n, nrhs, transa, A)
+            return INTEL_KrylovOperator(T, m, n, nrhs, transa, A)
         end
 
         function KP.update!(A::INTEL_KrylovOperator{T}, B::$SparseMatrixType) where T <: $BlasFloat
@@ -73,7 +73,7 @@ for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T,Int32}), :BlasFloat
             else
                 oneMKL.sparse_optimize_trsm!(uplo, transa, diag, nrhs, A)
             end
-            return INTEL_TriangularOperator{T}(T, m, n, nrhs, uplo, diag, transa, A)
+            return INTEL_TriangularOperator(T, m, n, nrhs, uplo, diag, transa, A)
         end
 
         function KP.update!(A::INTEL_TriangularOperator{T}, B::$SparseMatrixType) where T <: $BlasFloat

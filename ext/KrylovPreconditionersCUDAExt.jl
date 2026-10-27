@@ -2,7 +2,7 @@ module KrylovPreconditionersCUDAExt
 using LinearAlgebra
 using SparseArrays
 using CUDA
-using CUDA.CUSPARSE, CUDA.CUBLAS
+using CUDA.cuSPARSE, CUDA.cuBLAS
 using LinearAlgebra: checksquare, BlasReal, BlasFloat
 import LinearAlgebra: ldiv!, mul!
 import Base: size, eltype, unsafe_convert

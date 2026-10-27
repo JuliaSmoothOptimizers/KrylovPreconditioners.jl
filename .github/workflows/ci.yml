@@ -72,17 +72,12 @@ jobs:
       with:
         version: ${{ matrix.julia-version }}
     - uses: julia-actions/cache@v2
-    - name: Install ${{ matrix.package }}
-      run: |
-        julia --color=yes -e '
-          using Pkg
-          Pkg.add("${{ matrix.package }}")
-          Pkg.update()'
     - name: Run tests
       run: |
         julia --color=yes --project=./test -e '
           using Pkg
           Pkg.develop(path=".")
+          Pkg.add("${{ matrix.package }}")
           Pkg.instantiate()
           using ${{ matrix.package }}
           include("${{ matrix.test-file }}")'

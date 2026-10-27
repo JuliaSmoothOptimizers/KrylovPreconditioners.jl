@@ -156,7 +156,7 @@ Base.eltype(::BlockJacobiPreconditioner) = Float64
 # NOTE: Custom kernel to implement blocks - vector multiplication.
 # The blocks have very unbalanced sizes, leading to imbalances
 # between the different threads.
-# CUBLAS.gemm_strided_batched has been tested has well, but is
+# cuBLAS.gemm_strided_batched has been tested has well, but is
 # overall 3x slower than this custom kernel : due to the various sizes
 # of the blocks, gemm_strided is performing too many unecessary operations,
 # impairing its performance.
