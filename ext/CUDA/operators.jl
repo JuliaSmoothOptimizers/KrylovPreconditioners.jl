@@ -16,7 +16,9 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
                                      (:(CuSparseMatrixCOO{T}), :BlasFloat))
     @eval begin
         function KP.KrylovOperator(A::$SparseMatrixType; nrhs::Int=1, transa::Char='N') where T <: $BlasType
-            m,n = size(A)
+            # the conjugate transpose of a real matrix is its transpose
+            transa = (T <: Real && transa == 'C') ? 'T' : transa
+            m, n = transa == 'N' ? size(A) : reverse(size(A))  # the operator's size
             alpha = Ref{T}(one(T))
             beta = Ref{T}(zero(T))
             descA = cuSPARSE.CuSparseMatrixDescriptor(A, 'O')
@@ -53,19 +55,25 @@ for (SparseMatrixType, BlasType) in ((:(CuSparseMatrixCSR{T}), :BlasFloat),
     end
 end
 
-function LinearAlgebra.mul!(y::CuVector{T}, A::NVIDIA_KrylovOperator{T}, x::CuVector{T}) where T <: BlasFloat
+LinearAlgebra.mul!(y::CuVector{T}, A::NVIDIA_KrylovOperator{T}, x::CuVector{T}) where T <: BlasFloat =
+    mul!(y, A, x, one(T), zero(T))
+
+function LinearAlgebra.mul!(y::CuVector{T}, A::NVIDIA_KrylovOperator{T}, x::CuVector{T}, α::Number, β::Number) where T <: BlasFloat
     (length(y) != A.m) && throw(DimensionMismatch("length(y) != A.m"))
     (length(x) != A.n) && throw(DimensionMismatch("length(x) != A.n"))
     (A.nrhs == 1) || throw(DimensionMismatch("A.nrhs != 1"))
     descY = cuSPARSE.CuDenseVectorDescriptor(y)
     descX = cuSPARSE.CuDenseVectorDescriptor(x)
     algo = cuSPARSE.CUSPARSE_SPMV_ALG_DEFAULT
-    alpha = Ref{T}(one(T))
-    beta = Ref{T}(zero(T))
+    alpha = Ref{T}(α)
+    beta = Ref{T}(β)
     cuSPARSE.cusparseSpMV(cuSPARSE.handle(), A.transa, alpha, A.descA, descX, beta, descY, T, algo, A.buffer)
 end
 
-function LinearAlgebra.mul!(Y::CuMatrix{T}, A::NVIDIA_KrylovOperator{T}, X::CuMatrix{T}) where T <: BlasFloat
+LinearAlgebra.mul!(Y::CuMatrix{T}, A::NVIDIA_KrylovOperator{T}, X::CuMatrix{T}) where T <: BlasFloat =
+    mul!(Y, A, X, one(T), zero(T))
+
+function LinearAlgebra.mul!(Y::CuMatrix{T}, A::NVIDIA_KrylovOperator{T}, X::CuMatrix{T}, α::Number, β::Number) where T <: BlasFloat
     mY, nY = size(Y)
     mX, nX = size(X)
     (mY != A.m) && throw(DimensionMismatch("mY != A.m"))
@@ -74,8 +82,8 @@ function LinearAlgebra.mul!(Y::CuMatrix{T}, A::NVIDIA_KrylovOperator{T}, X::CuMa
     descY = cuSPARSE.CuDenseMatrixDescriptor(Y)
     descX = cuSPARSE.CuDenseMatrixDescriptor(X)
     algo = cuSPARSE.CUSPARSE_SPMM_ALG_DEFAULT
-    alpha = Ref{T}(one(T))
-    beta = Ref{T}(zero(T))
+    alpha = Ref{T}(α)
+    beta = Ref{T}(β)
     cuSPARSE.cusparseSpMM(cuSPARSE.handle(), A.transa, 'N', alpha, A.descA, descX, beta, descY, T, algo, A.buffer)
 end
 

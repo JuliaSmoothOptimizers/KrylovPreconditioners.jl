@@ -95,6 +95,34 @@ function test_operator(FC, V, DM, SM)
     mul!(y_gpu, opA_gpu, x_gpu)
     @test collect(y_gpu) ≈ y_cpu
   end
+  # y = α A x + β y
+  for i = 1:5
+    y_cpu = rand(FC, m)
+    x_cpu = rand(FC, n)
+    α, β = rand(FC), rand(FC)
+    y_gpu = V(y_cpu)
+    x_gpu = V(x_cpu)
+    mul!(y_cpu, A_cpu, x_cpu, α, β)
+    mul!(y_gpu, opA_gpu, x_gpu, α, β)
+    @test collect(y_gpu) ≈ y_cpu
+  end
+
+  # the transposed and adjoint operators of a rectangular matrix
+  for (transa, op) in (('T', transpose), ('C', adjoint))
+    opAt_gpu = KrylovOperator(A_gpu; transa)
+    @test size(opAt_gpu) == (n, m)
+    for i = 1:5
+      y_cpu = rand(FC, n)
+      x_cpu = rand(FC, m)
+      α, β = rand(FC), rand(FC)
+      y_gpu = V(y_cpu)
+      x_gpu = V(x_cpu)
+      mul!(y_cpu, op(A_cpu), x_cpu, α, β)
+      mul!(y_gpu, opAt_gpu, x_gpu, α, β)
+      @test collect(y_gpu) ≈ y_cpu
+    end
+  end
+
   if V.body.name.name != :oneArray
     for j = 1:5
       y_cpu = rand(FC, m)
@@ -120,6 +148,32 @@ function test_operator(FC, V, DM, SM)
     X_gpu = DM(X_cpu)
     mul!(Y_gpu, opA_gpu, X_gpu)
     @test collect(Y_gpu) ≈ Y_cpu
+  end
+  for i = 1:5
+    Y_cpu = rand(FC, m, nrhs)
+    X_cpu = rand(FC, n, nrhs)
+    α, β = rand(FC), rand(FC)
+    Y_gpu = DM(Y_cpu)
+    X_gpu = DM(X_cpu)
+    mul!(Y_cpu, A_cpu, X_cpu, α, β)
+    mul!(Y_gpu, opA_gpu, X_gpu, α, β)
+    @test collect(Y_gpu) ≈ Y_cpu
+  end
+
+  # the transposed and adjoint operators of a rectangular matrix, with several right-hand sides
+  for (transa, op) in (('T', transpose), ('C', adjoint))
+    opAt_gpu = KrylovOperator(A_gpu; nrhs, transa)
+    @test size(opAt_gpu) == (n, m)
+    for i = 1:5
+      Y_cpu = rand(FC, n, nrhs)
+      X_cpu = rand(FC, m, nrhs)
+      α, β = rand(FC), rand(FC)
+      Y_gpu = DM(Y_cpu)
+      X_gpu = DM(X_cpu)
+      mul!(Y_cpu, op(A_cpu), X_cpu, α, β)
+      mul!(Y_gpu, opAt_gpu, X_gpu, α, β)
+      @test collect(Y_gpu) ≈ Y_cpu
+    end
   end
   if V.body.name.name != :oneArray
     for j = 1:5

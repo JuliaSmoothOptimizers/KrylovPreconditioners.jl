@@ -14,7 +14,9 @@ for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T,Int32}), :BlasFloat
                                      (:(oneSparseMatrixCSR{T,Int64}), :BlasFloat))
     @eval begin
         function KP.KrylovOperator(A::$SparseMatrixType; nrhs::Int=1, transa::Char='N') where T <: $BlasType
-            m,n = size(A)
+            # the conjugate transpose of a real matrix is its transpose
+            transa = (T <: Real && transa == 'C') ? 'T' : transa
+            m, n = transa == 'N' ? size(A) : reverse(size(A))  # the operator's size
             if nrhs == 1
                 oneMKL.sparse_optimize_gemv!(transa, A)
             else
@@ -29,23 +31,29 @@ for (SparseMatrixType, BlasType) in ((:(oneSparseMatrixCSR{T,Int32}), :BlasFloat
     end
 end
 
-function LinearAlgebra.mul!(y::oneVector{T}, A::INTEL_KrylovOperator{T}, x::oneVector{T}) where T <: BlasFloat
+LinearAlgebra.mul!(y::oneVector{T}, A::INTEL_KrylovOperator{T}, x::oneVector{T}) where T <: BlasFloat =
+    mul!(y, A, x, one(T), zero(T))
+
+function LinearAlgebra.mul!(y::oneVector{T}, A::INTEL_KrylovOperator{T}, x::oneVector{T}, α::Number, β::Number) where T <: BlasFloat
     (length(y) != A.m) && throw(DimensionMismatch("length(y) != A.m"))
     (length(x) != A.n) && throw(DimensionMismatch("length(x) != A.n"))
     (A.nrhs == 1) || throw(DimensionMismatch("A.nrhs != 1"))
-    alpha = one(T)
-    beta = zero(T)
+    alpha = T(α)
+    beta = T(β)
     oneMKL.sparse_gemv!(A.transa, alpha, A.matrix, x, beta, y)
 end
 
-function LinearAlgebra.mul!(Y::oneMatrix{T}, A::INTEL_KrylovOperator{T}, X::oneMatrix{T}) where T <: BlasFloat
+LinearAlgebra.mul!(Y::oneMatrix{T}, A::INTEL_KrylovOperator{T}, X::oneMatrix{T}) where T <: BlasFloat =
+    mul!(Y, A, X, one(T), zero(T))
+
+function LinearAlgebra.mul!(Y::oneMatrix{T}, A::INTEL_KrylovOperator{T}, X::oneMatrix{T}, α::Number, β::Number) where T <: BlasFloat
     mY, nY = size(Y)
     mX, nX = size(X)
     (mY != A.m) && throw(DimensionMismatch("mY != A.m"))
     (mX != A.n) && throw(DimensionMismatch("mX != A.n"))
     (nY == nX == A.nrhs) || throw(DimensionMismatch("nY != A.nrhs or nX != A.nrhs"))
-    alpha = one(T)
-    beta = zero(T)
+    alpha = T(α)
+    beta = T(β)
     oneMKL.sparse_gemm!(A.transa, 'N', alpha, A.matrix, X, beta, Y)
 end
 
