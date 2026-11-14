@@ -159,6 +159,22 @@ function test_operator(FC, V, DM, SM)
     mul!(Y_gpu, opA_gpu, X_gpu, α, β)
     @test collect(Y_gpu) ≈ Y_cpu
   end
+
+  # the transposed and adjoint operators of a rectangular matrix, with several right-hand sides
+  for (transa, op) in (('T', transpose), ('C', adjoint))
+    opAt_gpu = KrylovOperator(A_gpu; nrhs, transa)
+    @test size(opAt_gpu) == (n, m)
+    for i = 1:5
+      Y_cpu = rand(FC, n, nrhs)
+      X_cpu = rand(FC, m, nrhs)
+      α, β = rand(FC), rand(FC)
+      Y_gpu = DM(Y_cpu)
+      X_gpu = DM(X_cpu)
+      mul!(Y_cpu, op(A_cpu), X_cpu, α, β)
+      mul!(Y_gpu, opAt_gpu, X_gpu, α, β)
+      @test collect(Y_gpu) ≈ Y_cpu
+    end
+  end
   if V.body.name.name != :oneArray
     for j = 1:5
       Y_cpu = rand(FC, m, nrhs)
